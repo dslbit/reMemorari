@@ -10,12 +10,15 @@ $color-green: #8db35e;
 $color-gray: #7c8381;
 $color-blue: #384d64;
 
+$mobile-max-width: 499px;
+
 * {
 	color: $color-white;
 }
 
 body {
 	background-color: $color-black;
+	// overflow: hidden;
 }
 
 .hidden-container {
@@ -24,29 +27,36 @@ body {
 
 .invisible {
 	opacity: 0;
-	transition: opacity 0.3s;
+	transition: opacity 0.1s;
 }
 
 .visible {
 	opacity: 1;
+	transition: opacity 0.1s;
 }
 
 div#app-main-container {
+	position: relative;
 	width: 100%;
-	max-width: 499px;
+	max-width: $mobile-max-width;
 	min-height: 100vh;
+	max-height: 100vh;
+	// overflow-y: scroll;
+	// overflow-h: hidden;
 	margin: 0px auto;
-	box-shadow: 0px 0px 5px rgba($color-white, 0.1);
+	// box-shadow: 0px 	0px 5px rgba($color-white, 0.1);
 	background-color: $color-black;
+
 }
 
 header#main-header {
-	padding: 1.5rem 0rem;
-	margin-bottom: 2rem;
+	padding: 1rem 0rem;
+	// margin-bottom: 2rem;
 	// border-bottom: 2px solid $color-white;
 	text-align: center;
 	user-select: none;
 	h2 {
+		display: none;
 		font-size: 3rem;
 		text-decoration: underline;
 	}
@@ -54,12 +64,14 @@ header#main-header {
 
 div#notes-list main#main-content {
 	padding: 0rem 1.5rem;
+	padding-bottom: 0.2rem;
 
 	section.note {
 		width: 100%;
 		min-height: 9rem;
 		display: flex;
 		flex-direction: column;
+		justify-content: space-between;
 		padding: 1rem;
 		margin-bottom: 2rem;
 		border-radius: 4px;
@@ -80,8 +92,9 @@ div#notes-list main#main-content {
 
 		div.note-title {
 			align-self: start;
-			font-size: 1.15rem;
+			font-size: 1rem;
 			margin-bottom: 0.5rem;
+			text-transform: uppercase;
 		}
 
 		div.note-preview {
@@ -104,54 +117,62 @@ div#notes-list main#main-content {
 		}
 	}
 
-	div.add-action {
-		width: 100%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		min-height: 5rem;
-		border-radius: 4px;
+	div#add-action {
+		position: fixed;
+		bottom: 2rem;
+		right: 1.5rem;
+		// transform: translate(50%, 0px);
+		width: 5rem;
+		height: 5rem;
+		padding: 1.5rem;
+		border-radius: 2.5rem;
 		border: 1px solid rgba($color-white, 0.2);
-		box-shadow: 0px 0px 5px rgba($color-white, 0.05);
-		background-color: rgba($color-white, 0.05);
+		box-shadow: 0px 0px 8px rgba($color-white, 0.3);
+		background: url('../_icons/icon_plus.png') no-repeat center/50% rgba($color-black, 1);
 		cursor: pointer;
-		text-transform: uppercase;
 		user-select: none;
 		font-size: 2rem;
 		transition: opacity 0.15s, box-shadow 0.15s;
+		z-index: 100;
 
 		&:hover {
-			box-shadow: 0px 0px 5px rgba($color-white, 0.4);
-			opacity: 0.8;
+			box-shadow: 0px 0px 15px rgba($color-white, 0.8);
+			// opacity: 0.8;
 		}
 
 		&:active {
-			opacity: 0.2;
+			box-shadow: 0px 0px 30px rgba($color-white, 1);
+			// opacity: 0.2;
 		}
 	}
+
 }
 
 div#note-view {
-	// opacity: 0;
-	// transition: opacity 0.25s;
+	// position: relative;
+	// width: 100%;
+	padding-bottom: 5rem;
 
 	header#note-view-header {
+		position: fixed;
+		max-width: $mobile-max-width;
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
 		padding: 1rem;
+		user-select: none;
+		background-color: rgba($color-black, 0.95);
 
 		div {
 			display: inline-block;
 			cursor: pointer;
-		}
-
-		// Go Back indicator		
-		div img {
+			// z-index: 10;
 			width: 3rem;
 			height: 3rem;
-			padding: 0.3rem;
+			padding: 0.65rem;
 			border-radius: 1.5rem;
-			box-shadow: 0px 0px 5px rgba($color-white, 0.05);
 			border: 1px solid rgba($color-white, 0.5);
-			pointer-events: none;
+			box-shadow: 0px 0px 5px rgba($color-white, 0.05);
 			transition: opacity 0.25s, box-shadow 0.15s;
 
 			&:hover {
@@ -163,10 +184,15 @@ div#note-view {
 				opacity: 0.5;
 			}
 		}
+
+		// Go Back img indicator 
+		div img {
+			pointer-events: none;
+		}
 	}
 
 	section#note-view-section {
-		padding: 0rem 1rem;
+		padding: 5rem 1rem 0rem;
 		
 		div.note-view-title {
 			// padding: 1rem;
@@ -177,7 +203,7 @@ div#note-view {
 
 			h1 {
 				text-transform: uppercase;
-				font-size: 3rem;
+				font-size: 2rem;
 			}
 		}
 
@@ -189,6 +215,96 @@ div#note-view {
 
 		div.note-date-created {
 			font-size: 0.85rem;
+		}
+	}
+}
+
+div#note-creation {
+	padding: 1rem;
+	user-select: none;
+
+	input,
+	textarea {
+		width: 100%;
+		max-width: 100%;
+		min-height: 5rem;
+		padding: 1rem;
+		margin-bottom: 3rem;
+		background-color: $color-black;
+		box-shadow: inset 0px 0px 5px rgba($color-white, 0.3);
+		border: none;
+		border-radius: 4px;
+		outline: none;
+		transition: box-shadow 0.25s;
+
+		&:focus {
+			box-shadow: inset 0px 0px 10px rgba($color-white, 0.5);
+		}
+	}
+
+	textarea {
+		min-height: 60vh;
+		resize: none;
+	}
+
+	div.confirmation-buttons {
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+
+
+		button {
+			text-transform: uppercase;
+			padding: 1.25rem 2rem;
+			border: none;
+			color: $color-black;
+			font-weight: bold;
+			// background-color: $color-black;
+			border-radius: 4px;
+			// box-shadow: 0px 0px 10px rgba($color-white, 0.09);
+			border: 1px solid rgba($color-white, 0.095);
+			cursor: pointer;
+			opacity: 0.8;
+			transition: box-shadow 0.15s, opacity 0.085s, background-color 0.15s, border 0.15s, color 0.15s;
+		}
+
+		div.cancel-btn button {
+			background-color: $color-orange;
+
+			&:hover {
+				color: $color-orange;
+				border: 1px solid rgba($color-orange, 0.5);
+				box-shadow: inset 0px 0px 10px rgba($color-orange, 0.3);
+				background-color: $color-black;
+			}
+
+			&:active {
+				// border: inset 3px solid rgba($color-orange, 0.8);
+				box-shadow: inset 0px 0px 10px rgba($color-orange, 1);
+			}
+		}
+
+		div.create-btn button {
+			background-color: $color-green;
+
+			&:hover {
+				color: $color-green;
+				border: 1px solid rgba($color-green, 0.5);
+				box-shadow: inset 0px 0px 10px rgba($color-green, 0.3);
+				background-color: $color-black;
+			}
+
+			&:active {
+				box-shadow: inset 0px 0px 10px rgba($color-green, 1);
+			}
+		}
+
+		button:hover {
+			opacity: 0.8;
+		}
+
+		button:active {
+			opacity: 0.2;
 		}
 	}
 }
