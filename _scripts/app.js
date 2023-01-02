@@ -2,8 +2,8 @@
 // Model
 //
 
-// TODO: save the currently note the user is reading to load in a new session if needed
-// TODO: split content into paragraphs (using the newline separator)
+// TODO: save the current note the user is reading to load in a new session if needed
+// TODO: split content into paragraphs (using the newline separator or something like that)
 let gNotes = [
   {
   	id: 'id-01',
@@ -14,205 +14,23 @@ let gNotes = [
   	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
   	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
   	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.',
-  	createdDate: '00/00/0000'
-  },
-{
-  	id: 'id-02',
-  	title: 'Lorem Ipsum 2',
-  	content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.',
-  	createdDate: '00/00/0000'
-  },
-
-  {
-  	id: 'id-03',
-  	title: 'Lorem Ipsum 3',
-  	content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.',
-  	createdDate: '00/00/0000'
-  },
-
-  {
-  	id: 'id-04',
-  	title: 'Lorem Ipsum 3',
-  	content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.',
-  	createdDate: '00/00/0000'
-  },
-
-  {
-  	id: 'id-05',
-  	title: 'Lorem Ipsum 4',
-  	content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.\
-  	Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
   	culpa qui officia deserunt mollit anim id est laborum.',
   	createdDate: '00/00/0000'
   },
 ];
 
-let gTimeoutFadeEffectInMs = 90;
+const gTimeoutFadeEffectInMs = 90;
 
-function notesRemove(noteId) {
+function noteCreate(noteId, noteTitle, noteContent, noteCreatedDate) {
+	gNotes.push({
+		id: noteId,
+		title: noteTitle,
+		content: noteContent,
+		createdDate: noteCreatedDate
+	});
+}
+
+function noteRemove(noteId) {
 	gNotes = gNotes.filter(function(note) {
 		if(noteId == note.id) {
 			return false;
@@ -225,14 +43,26 @@ function notesRemove(noteId) {
 //
 // First Run
 //
-renderNotes(gNotes);
+renderAllNotes(gNotes);
 
 //
 // View
+// TODO: fade-in / fade-out helper functions
+// TODO: render notes list?
+// TODO: render note view
+// TODO: render note creation
+// TODO: render note editing
+// TODO: move every priece of code in this app that changes the html to this place (View)
 //
-function renderNotes(notes) {
+function renderAllNotes(notes) {
 	let noteSection;
 	const notesContainer = document.getElementById('main-content');
+	notesContainer.innerHTML = '';
+
+	const addActionContainer = document.createElement('div');
+	addActionContainer.innerText = '';
+	addActionContainer.setAttribute('id', 'add-action');
+	notesContainer.appendChild(addActionContainer);
 	
 	// fade-in (notesList)
 	{
@@ -245,7 +75,6 @@ function renderNotes(notes) {
 		}, gTimeoutFadeEffectInMs*2);
 	}
 	
-	notesContainer.innerHTML = '';
 	gNotes.forEach(function(note) {
 		// console.log(note);
 		const noteSection = document.createElement('section');
@@ -255,7 +84,7 @@ function renderNotes(notes) {
 		// noteSection.classList.add('invisible');
 
 		const noteTitle = document.createElement('div');
-		noteTitle.innerText = note.title;
+		noteTitle.textContent = note.title;
 		noteTitle.classList.add('note-title');
 		noteSection.appendChild(noteTitle);
 
@@ -267,21 +96,16 @@ function renderNotes(notes) {
 			} else {
 				endContentStrIndex = 280;
 			}
-			noteContentPreview.innerText = note.content.slice(0, endContentStrIndex) + '...';
+			noteContentPreview.textContent = note.content.slice(0, endContentStrIndex) + '...';
 		}
 		noteContentPreview.classList.add('note-preview');
 		noteSection.appendChild(noteContentPreview);
 
 		const noteDate = document.createElement('div');
-		noteDate.innerText = 'Created: ' + note.createdDate;
+		noteDate.textContent = 'Created: ' + note.createdDate;
 		noteDate.classList.add('note-date');
 		noteSection.appendChild(noteDate);
 	});
-
-	const addActionContainer = document.createElement('div');
-	addActionContainer.innerText = '';
-	addActionContainer.setAttribute('id', 'add-action');
-	notesContainer.appendChild(addActionContainer);
 }
 
 
@@ -290,32 +114,17 @@ function renderNotes(notes) {
 //
 // Controller
 //
-const gMainContent = document.getElementById('main-content');
+const gMainContentContainer = document.getElementById('main-content');
 const gNoteViewContainer = document.getElementById('note-view');
 const gNotesListContainer = document.getElementById('notes-list');
 
-//
-// Click event: add action
-//
-gMainContent.addEventListener('click', function(event) {
-	if(event.target.classList.contains('add-action')) {
-
-		// create a new note and its default data
-
-		// get an unique id using the date object
-
-		// use dataset to apply the id to the note container
-	}
-});
-
-//
-// Click event: note
-//
-gMainContent.addEventListener('click', function(event) {
+// NOTE: Click event -> view note
+gMainContentContainer.addEventListener('click', function(event) {
 	if(event.target.classList.contains('note')) {
 		// Use the dataset and get the note unique id to identify in the Model section the note data, then
 		//   render it in the 'note-view' container and hide the notes container
 
+		// TODO: move to the view section
 		for(let i = 0; i < gNotes.length; ++i) {
 			if(event.target.dataset.id === gNotes[i].id) {
 				// console.log(event.target);
@@ -333,7 +142,7 @@ gMainContent.addEventListener('click', function(event) {
 				noteViewSection.appendChild(noteViewTitleContainer);
 
 				const noteViewContent = document.createElement('div');
-				noteViewContent.innerText = gNotes[i].content;
+				noteViewContent.textContent = gNotes[i].content;
 				noteViewContent.classList.add('note-view-content');
 				noteViewSection.appendChild(noteViewContent);
 
@@ -363,9 +172,7 @@ gMainContent.addEventListener('click', function(event) {
 	}
 });
 
-//
-// Click event: go back (from note view to note list) & delete note
-// 
+// NOTE: Click event -> go back (from note view to note list) & delete note
 gNoteViewContainer.addEventListener('click', function(event) {
 	// Go back Action
 	if(event.target.classList.contains('note-view-go-back-action')) {
@@ -384,6 +191,8 @@ gNoteViewContainer.addEventListener('click', function(event) {
 		}, gTimeoutFadeEffectInMs*3);
 	}
 
+	// TODO: edit action
+
 	// Delete note action
 	if(event.target.classList.contains('note-view-delete-action')) {
 		// TODO: 'Are you sure?' confirmation box
@@ -392,7 +201,7 @@ gNoteViewContainer.addEventListener('click', function(event) {
 			gNoteViewContainer.classList.remove('visible');
 			const noteViewSectionToRemove = document.getElementById('note-view-section');
 			const noteIdToRemove = noteViewSectionToRemove.dataset.id;
-			notesRemove(noteIdToRemove);
+			noteRemove(noteIdToRemove);
 
 			setTimeout(function() {
 				noteViewSectionToRemove.remove();
@@ -401,9 +210,9 @@ gNoteViewContainer.addEventListener('click', function(event) {
 			}, gTimeoutFadeEffectInMs*2);
 
 			setTimeout(function() {
-				for(let i = 0; i < gMainContent.childNodes.length; ++i) {
-					if(gMainContent.childNodes[i].dataset.id === noteIdToRemove) {
-						gMainContent.childNodes[i].remove();
+				for(let i = 0; i < gMainContentContainer.childNodes.length; ++i) {
+					if(gMainContentContainer.childNodes[i].dataset.id === noteIdToRemove) {
+						gMainContentContainer.childNodes[i].remove();
 						break;
 					}
 				}
@@ -413,13 +222,12 @@ gNoteViewContainer.addEventListener('click', function(event) {
 	}
 });
 
-//
-// Click event: add a new note
-// NOTE: Why after deleting a note it doesn't work anymore?
-//
-gNoteCreationContainer = document.getElementById('note-creation');
-btnAddAction = document.getElementById('add-action');
+// NOTE: Click event -> add a new note
+const gNoteCreationContainer = document.getElementById('note-creation');
+const btnAddAction = document.getElementById('add-action');
 btnAddAction.addEventListener('click', function(event) {
+	document.getElementById('note-creation-title-input').value = '';
+	document.getElementById('note-creation-content-input').value = '';
 	// fade-out notes list container, fade-in note creation container
 	{
 		gNotesListContainer.classList.add('invisible');
@@ -434,7 +242,8 @@ btnAddAction.addEventListener('click', function(event) {
 	}
 });
 
-btnCancelNoteCreation = document.querySelector('.cancel-btn');
+// NOTE: Click event -> cancel new note creation
+const btnCancelNoteCreation = document.querySelector('.cancel-btn');
 btnCancelNoteCreation.addEventListener('click', function(event) {
 	// fade-out note creation container, fade-in notes list
 	{
@@ -450,4 +259,99 @@ btnCancelNoteCreation.addEventListener('click', function(event) {
 			gNotesListContainer.classList.add('visible');	
 		}, gTimeoutFadeEffectInMs*3);
 	}
+});
+
+// NOTE: Click event -> create note (button)
+
+const btnCreateNote = document.querySelector('.create-btn');
+btnCreateNote.addEventListener('click', function(event) {
+	// Note title validation
+	const noteTitleInput = document.getElementById('note-creation-title-input');
+	{
+		if(noteTitleInput.value.length < 3) {
+			console.log('The note title must be greater than 3.');
+			// TODO: model box
+			return;
+		}
+
+		for(let i = 0; i < gNotes.length; ++i) {
+			if(gNotes[i].title === noteTitleInput.value) {
+				console.log('Note title already exist.');
+				return;
+			}
+		}
+	}
+
+	const noteContentInput = document.getElementById('note-creation-content-input');
+
+	// Generating note date and ID info
+	let noteDate = new Date();
+	let noteId = '' + Date.parse(noteDate) + Math.floor(Math.random() * 100000);
+	// console.log(noteId);
+	let noteCreatedDateAsStr = '';
+	{
+		const noteDateDay = noteDate.getDate();
+		const noteDateMonth = noteDate.getMonth();
+		const noteDateYear = noteDate.getFullYear();
+		const noteDateHour = noteDate.getHours();
+		const noteDateMinutes = noteDate.getMinutes();
+		noteCreatedDateAsStr = `${noteDateMonth+1}/${noteDateDay}/${noteDateYear} ${noteDateHour}:${noteDateMinutes}`;
+		// console.log(noteCreatedDateAsStr);
+	}
+	
+	noteCreate(noteId, noteTitleInput.value, noteContentInput.value, noteCreatedDateAsStr);
+
+	// TODO: move this to the view section
+	// render new added note to the notes list
+	{
+		const newNoteSection = document.createElement('section');
+		newNoteSection.dataset.id = noteId;
+		newNoteSection.classList.add('note');
+
+		const newNoteTitle = document.createElement('div');
+		newNoteTitle.textContent = noteTitleInput.value;
+		newNoteTitle.classList.add('note-title');
+		newNoteSection.appendChild(newNoteTitle);
+		
+		const newNotePreview = document.createElement('div');
+		{
+			let endContentStrIndex = 0;
+			if(noteContentInput.value.length < 280) {
+				endContentStrIndex = noteContentInput.value.length;
+			} else {
+				endContentStrIndex = 280;
+			}
+			newNotePreview.textContent = noteContentInput.value.slice(0, endContentStrIndex) + '...';
+		}
+		newNotePreview.classList.add('note-preview');
+		newNoteSection.appendChild(newNotePreview);
+
+		const newNoteDate = document.createElement('div');
+		newNoteDate.textContent = noteCreatedDateAsStr;
+		newNoteDate.classList.add('note-date');
+		newNoteSection.appendChild(newNoteDate);
+
+		gMainContentContainer.appendChild(newNoteSection);
+	}
+
+	// fade-out note creation container and fade-in notes list
+	{
+		gNoteCreationContainer.classList.remove('visible');
+
+		setTimeout(function() {
+			gNoteCreationContainer.classList.add('hidden-container');
+			gNotesListContainer.classList.remove('hidden-container');
+			
+		}, gTimeoutFadeEffectInMs*2);
+
+		setTimeout(function() {
+			gNotesListContainer.classList.add('visible');
+			// renderNotes(gNotes);
+
+			
+		}, gTimeoutFadeEffectInMs*3);
+	}
+
+	// use dataset to apply the id to the note container
+
 });
