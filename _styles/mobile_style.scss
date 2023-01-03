@@ -10,6 +10,7 @@ $color-green: #8db35e;
 $color-gray: #7c8381;
 $color-blue: #384d64;
 
+$mobile-min-width: 265px;
 $mobile-max-width: 499px;
 
 * {
@@ -38,6 +39,7 @@ body {
 div#app-main-container {
 	position: relative;
 	width: 100%;
+	min-width: $mobile-min-width;
 	max-width: $mobile-max-width;
 	min-height: 100vh;
 	max-height: 100vh;
@@ -201,16 +203,18 @@ div#note-view {
 			justify-content: center;
 			align-items: center;
 
-			h1 {
+			h2 {
 				text-transform: uppercase;
 				font-size: 2rem;
+				// white-space: wrap;
+				text-indent: justify-content;
 			}
 		}
 
 		div.note-view-content {
 			margin-bottom: 2rem;
 			font-size: 1.25rem;
-			text-align: justify;
+			// text-align: justify;
 		}
 
 		div.note-date-created {

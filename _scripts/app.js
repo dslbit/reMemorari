@@ -136,13 +136,13 @@ gMainContentContainer.addEventListener('click', function(event) {
 
 				const noteViewTitleContainer = document.createElement('div');
 				noteViewTitleContainer.classList.add('note-view-title');
-				const noteViewTitle = document.createElement('h1');
+				const noteViewTitle = document.createElement('h2');
 				noteViewTitle.innerText = gNotes[i].title;
 				noteViewTitleContainer.appendChild(noteViewTitle);
 				noteViewSection.appendChild(noteViewTitleContainer);
 
 				const noteViewContent = document.createElement('div');
-				noteViewContent.textContent = gNotes[i].content;
+				noteViewContent.innerHTML = gNotes[i].content.replaceAll('\n', '<br>');
 				noteViewContent.classList.add('note-view-content');
 				noteViewSection.appendChild(noteViewContent);
 
@@ -283,6 +283,9 @@ btnCreateNote.addEventListener('click', function(event) {
 	}
 
 	const noteContentInput = document.getElementById('note-creation-content-input');
+	const notesContent = noteContentInput.value;
+	// const notesContent = noteContentInput.value.replaceAll('\n', '<br>');
+	// console.log(notesContent);
 
 	// Generating note date and ID info
 	let noteDate = new Date();
@@ -299,7 +302,7 @@ btnCreateNote.addEventListener('click', function(event) {
 		// console.log(noteCreatedDateAsStr);
 	}
 	
-	noteCreate(noteId, noteTitleInput.value, noteContentInput.value, noteCreatedDateAsStr);
+	noteCreate(noteId, noteTitleInput.value, notesContent, noteCreatedDateAsStr);
 
 	// TODO: move this to the view section
 	// render new added note to the notes list
@@ -316,12 +319,12 @@ btnCreateNote.addEventListener('click', function(event) {
 		const newNotePreview = document.createElement('div');
 		{
 			let endContentStrIndex = 0;
-			if(noteContentInput.value.length < 280) {
-				endContentStrIndex = noteContentInput.value.length;
+			if(notesContent.length < 280) {
+				endContentStrIndex = notesContent.length;
 			} else {
 				endContentStrIndex = 280;
 			}
-			newNotePreview.textContent = noteContentInput.value.slice(0, endContentStrIndex) + '...';
+			newNotePreview.textContent = notesContent.slice(0, endContentStrIndex) + '...';
 		}
 		newNotePreview.classList.add('note-preview');
 		newNoteSection.appendChild(newNotePreview);
