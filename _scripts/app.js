@@ -2,9 +2,12 @@
 // Model
 //
 
+
 // TODO: save the current note the user is reading to load in a new session if needed
 // TODO: split content into paragraphs (using the newline separator or something like that)
-let gNotes = [
+const gNotesKey = 'notesAppByDSLDataInLocalStorage';
+let gNotes = []; // feed in preRenderSetup()
+/*let gNotes = [
   {
   	id: 'id-01',
   	title: 'Lorem Ipsum 1',
@@ -18,6 +21,7 @@ let gNotes = [
   	createdDate: '00/00/0000'
   },
 ];
+*/
 
 const gTimeoutFadeEffectInMs = 90;
 
@@ -40,9 +44,14 @@ function noteRemove(noteId) {
 	});
 }
 
+function notesSaveToLocalStorage() {
+	localStorage.setItem(gNotesKey, JSON.stringify(gNotes));
+}
+
 //
 // First Run
 //
+preRenderSetup();
 renderAllNotes(gNotes);
 
 //
@@ -117,6 +126,31 @@ function renderAllNotes(notes) {
 const gMainContentContainer = document.getElementById('main-content');
 const gNoteViewContainer = document.getElementById('note-view');
 const gNotesListContainer = document.getElementById('notes-list');
+
+function preRenderSetup() {
+	// Checking if there's data to be loaded from local storage
+	{
+		const notesAppByDSLDataInLocalStorage = JSON.parse(localStorage.getItem(gNotesKey));
+		if(notesAppByDSLDataInLocalStorage != null) {
+			gNotes = notesAppByDSLDataInLocalStorage;
+			console.log('data key: ' + gNotesKey + '\nloaded: ' + gNotes);
+		}
+	}
+
+	let noteCreationTitleInput = document.getElementById('note-creation-title-input');
+	// console.log(noteCreationTitleInput.maxLength);
+
+	let userDeviceWidth = window.innerWidth;
+	if(userDeviceWidth >= 360 && userDeviceWidth < 400) {
+		noteCreationTitleInput.maxLength = 19;
+	} else if(userDeviceWidth >= 400 && userDeviceWidth < 430) {
+		noteCreationTitleInput.maxLength = 22;
+	} else if(userDeviceWidth >= 460 && userDeviceWidth < 500) {
+		noteCreationTitleInput.maxLength = 24;
+	} else if(userDeviceWidth >= 500) {
+		noteCreationTitleInput.maxLength = 26;
+	}
+}
 
 // NOTE: Click event -> view note
 gMainContentContainer.addEventListener('click', function(event) {
@@ -202,6 +236,7 @@ gNoteViewContainer.addEventListener('click', function(event) {
 			const noteViewSectionToRemove = document.getElementById('note-view-section');
 			const noteIdToRemove = noteViewSectionToRemove.dataset.id;
 			noteRemove(noteIdToRemove);
+			notesSaveToLocalStorage();
 
 			setTimeout(function() {
 				noteViewSectionToRemove.remove();
@@ -262,7 +297,6 @@ btnCancelNoteCreation.addEventListener('click', function(event) {
 });
 
 // NOTE: Click event -> create note (button)
-
 const btnCreateNote = document.querySelector('.create-btn');
 btnCreateNote.addEventListener('click', function(event) {
 	// Note title validation
@@ -293,16 +327,18 @@ btnCreateNote.addEventListener('click', function(event) {
 	// console.log(noteId);
 	let noteCreatedDateAsStr = '';
 	{
-		const noteDateDay = noteDate.getDate();
-		const noteDateMonth = noteDate.getMonth();
+		console.log(typeof(noteDate.getDate()));
+		let noteDateDay = (noteDate.getDate() < 10) ? ('0' + (noteDate.getDate())) : noteDate.getDate();
+		let noteDateMonth = (noteDate.getMonth() + 1 < 10) ? ('0' + (noteDate.getMonth() + 1)) : noteDate.getMonth() + 1;
 		const noteDateYear = noteDate.getFullYear();
-		const noteDateHour = noteDate.getHours();
-		const noteDateMinutes = noteDate.getMinutes();
-		noteCreatedDateAsStr = `${noteDateMonth+1}/${noteDateDay}/${noteDateYear} ${noteDateHour}:${noteDateMinutes}`;
+		let noteDateHour = (noteDate.getHours() < 10) ? ('0' + noteDate.getHours()) : noteDate.getHours();
+		let noteDateMinutes = (noteDate.getMinutes() < 10) ? ('0' + noteDate.getMinutes()) : noteDate.getMinutes();
+		noteCreatedDateAsStr = `${noteDateMonth}/${noteDateDay}/${noteDateYear} ${noteDateHour}:${noteDateMinutes}`;
 		// console.log(noteCreatedDateAsStr);
 	}
 	
 	noteCreate(noteId, noteTitleInput.value, notesContent, noteCreatedDateAsStr);
+	notesSaveToLocalStorage();
 
 	// TODO: move this to the view section
 	// render new added note to the notes list
@@ -330,7 +366,7 @@ btnCreateNote.addEventListener('click', function(event) {
 		newNoteSection.appendChild(newNotePreview);
 
 		const newNoteDate = document.createElement('div');
-		newNoteDate.textContent = noteCreatedDateAsStr;
+		newNoteDate.textContent = 'Created: ' + noteCreatedDateAsStr;
 		newNoteDate.classList.add('note-date');
 		newNoteSection.appendChild(newNoteDate);
 
