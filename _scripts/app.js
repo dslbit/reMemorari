@@ -133,7 +133,7 @@ function preRenderSetup() {
 		const notesAppByDSLDataInLocalStorage = JSON.parse(localStorage.getItem(gNotesKey));
 		if(notesAppByDSLDataInLocalStorage != null) {
 			gNotes = notesAppByDSLDataInLocalStorage;
-			console.log('data key: ' + gNotesKey + '\nloaded: ' + gNotes);
+			console.log('data key: ' + gNotesKey + '\nloaded: ' + gNotes.length + ' objetcts');
 		}
 	}
 
@@ -327,7 +327,6 @@ btnCreateNote.addEventListener('click', function(event) {
 	// console.log(noteId);
 	let noteCreatedDateAsStr = '';
 	{
-		console.log(typeof(noteDate.getDate()));
 		let noteDateDay = (noteDate.getDate() < 10) ? ('0' + (noteDate.getDate())) : noteDate.getDate();
 		let noteDateMonth = (noteDate.getMonth() + 1 < 10) ? ('0' + (noteDate.getMonth() + 1)) : noteDate.getMonth() + 1;
 		const noteDateYear = noteDate.getFullYear();

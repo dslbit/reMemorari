@@ -1,17 +1,5 @@
 @import "./resets";
-
-// INSECTA PALETTE
-$color-black: #1a1417;
-$color-brown: #67413a;
-$color-red: #af4b3b;
-$color-orange: #c18549;
-$color-white: #d9cbae;
-$color-green: #8db35e;
-$color-gray: #7c8381;
-$color-blue: #384d64;
-
-$mobile-min-width: 265px;
-$mobile-max-width: 499px;
+@import "./global_variables";
 
 * {
 	color: $color-white;

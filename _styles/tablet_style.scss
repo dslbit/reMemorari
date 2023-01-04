@@ -1,0 +1,31 @@
+@import "./global_variables";
+
+@media only screen and (min-width: $tablet-min-width) {
+	div#app-main-container {
+		min-width: $tablet-min-width - 100px;
+		max-width: $tablet-max-width;
+	}
+
+	div#notes-list main#main-content {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		column-gap: 2rem;
+	}
+
+	div#note-view {
+		header#note-view-header {
+			max-width: $tablet-max-width;
+		}
+
+	}
+
+	div#note-creation {
+		max-width: $tablet-min-width - 100px;
+		margin: 0px auto;
+
+		input,
+		textarea {
+			font-size: 1.25rem;
+		}
+	}
+}
