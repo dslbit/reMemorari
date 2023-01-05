@@ -1,3 +1,9 @@
+//
+// TODO: model box (cancel / confirm)
+// TODO: hover text labels on buttons
+// TODO: 
+//
+
 @import "./resets";
 @import "./global_variables";
 
@@ -7,7 +13,6 @@
 
 body {
 	background-color: $color-black;
-	// overflow: hidden;
 }
 
 .hidden-container {
@@ -30,31 +35,73 @@ div#app-main-container {
 	min-width: $mobile-min-width;
 	max-width: $mobile-max-width;
 	min-height: 100vh;
-	max-height: 100vh;
-	// overflow-y: scroll;
-	// overflow-h: hidden;
+	// max-height: 100vh;
 	margin: 0px auto;
-	// box-shadow: 0px 	0px 5px rgba($color-white, 0.1);
 	background-color: $color-black;
 
+	div#modal-box-container {
+		position: absolute;
+		min-width: 100%;
+		min-height: 100%;
+		top: 0px;
+		display: none;
+		z-index: 1000;
+		background-color: rgba(0, 0, 0, 0.5);
+	}
+
+	div#add-action,
+	div#clear-action,
+	div#backup-action {
+		position: fixed;
+		right: 1.5rem;
+		// transform: translate(50%, 0px);
+		width: 5rem;
+		height: 5rem;
+		padding: 1.5rem;
+		border-radius: 2.5rem;
+		border: 1px solid rgba($color-white, 0.2);
+		box-shadow: 0px 0px 8px rgba($color-white, 0.3);
+		cursor: pointer;
+		user-select: none;
+		font-size: 2rem;
+		transition: opacity 0.15s, box-shadow 0.15s;
+		z-index: 100;
+
+		&:hover {
+			box-shadow: 0px 0px 15px rgba($color-white, 0.8);
+			// opacity: 0.8;
+		}
+
+		&:active {
+			box-shadow: 0px 0px 30px rgba($color-white, 1);
+			// opacity: 0.2;
+		}
+	}
+
+	div#add-action {
+		bottom: 13rem;
+		background: url('../_icons/icon_plus.png') no-repeat center/50% rgba($color-black, 1);
+	}
+
+	div#clear-action {
+		bottom: 7rem;
+		background: url('../_icons/icon_clear.png') no-repeat center/50% rgba($color-black, 1);
+	}
+
+	div#backup-action {
+		bottom: 1rem;
+		background: url('../_icons/icon_cloud.png') no-repeat center/50% rgba($color-black, 1);
+	}
 }
 
 header#main-header {
 	padding: 1rem 0rem;
-	// margin-bottom: 2rem;
-	// border-bottom: 2px solid $color-white;
 	text-align: center;
 	user-select: none;
-	h2 {
-		display: none;
-		font-size: 3rem;
-		text-decoration: underline;
-	}
 }
 
 div#notes-list main#main-content {
-	padding: 0rem 1.5rem;
-	padding-bottom: 0.2rem;
+	padding: 1rem 1.5rem 0rem;
 
 	section.note {
 		width: 100%;
@@ -107,40 +154,9 @@ div#notes-list main#main-content {
 		}
 	}
 
-	div#add-action {
-		position: fixed;
-		bottom: 2rem;
-		right: 1.5rem;
-		// transform: translate(50%, 0px);
-		width: 5rem;
-		height: 5rem;
-		padding: 1.5rem;
-		border-radius: 2.5rem;
-		border: 1px solid rgba($color-white, 0.2);
-		box-shadow: 0px 0px 8px rgba($color-white, 0.3);
-		background: url('../_icons/icon_plus.png') no-repeat center/50% rgba($color-black, 1);
-		cursor: pointer;
-		user-select: none;
-		font-size: 2rem;
-		transition: opacity 0.15s, box-shadow 0.15s;
-		z-index: 100;
-
-		&:hover {
-			box-shadow: 0px 0px 15px rgba($color-white, 0.8);
-			// opacity: 0.8;
-		}
-
-		&:active {
-			box-shadow: 0px 0px 30px rgba($color-white, 1);
-			// opacity: 0.2;
-		}
-	}
-
 }
 
 div#note-view {
-	// position: relative;
-	// width: 100%;
 	padding-bottom: 5rem;
 
 	header#note-view-header {
@@ -156,7 +172,7 @@ div#note-view {
 		div {
 			display: inline-block;
 			cursor: pointer;
-			// z-index: 10;
+			z-index: 10;
 			width: 3rem;
 			height: 3rem;
 			padding: 0.65rem;
@@ -185,7 +201,6 @@ div#note-view {
 		padding: 5rem 1rem 0rem;
 		
 		div.note-view-title {
-			// padding: 1rem;
 			margin-bottom: 2rem;
 			display: flex;
 			justify-content: center;
@@ -194,7 +209,6 @@ div#note-view {
 			h2 {
 				text-transform: uppercase;
 				font-size: 2rem;
-				// white-space: wrap;
 				text-indent: justify-content;
 			}
 		}
@@ -202,7 +216,6 @@ div#note-view {
 		div.note-view-content {
 			margin-bottom: 2rem;
 			font-size: 1.25rem;
-			// text-align: justify;
 		}
 
 		div.note-date-created {
@@ -235,7 +248,7 @@ div#note-creation {
 	}
 
 	textarea {
-		min-height: 60vh;
+		min-height: 55vh;
 		resize: none;
 	}
 
@@ -251,9 +264,7 @@ div#note-creation {
 			border: none;
 			color: $color-black;
 			font-weight: bold;
-			// background-color: $color-black;
 			border-radius: 4px;
-			// box-shadow: 0px 0px 10px rgba($color-white, 0.09);
 			border: 1px solid rgba($color-white, 0.095);
 			cursor: pointer;
 			opacity: 0.8;
@@ -271,7 +282,6 @@ div#note-creation {
 			}
 
 			&:active {
-				// border: inset 3px solid rgba($color-orange, 0.8);
 				box-shadow: inset 0px 0px 10px rgba($color-orange, 1);
 			}
 		}

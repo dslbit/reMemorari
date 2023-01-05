@@ -1,6 +1,7 @@
 @import "./global_variables";
 
 @media only screen and (min-width: $tablet-min-width) {
+	
 	div#app-main-container {
 		min-width: $tablet-min-width - 100px;
 		max-width: $tablet-max-width;
@@ -8,7 +9,7 @@
 
 	div#notes-list main#main-content {
 		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
+		grid-template-columns: 1fr 1fr;
 		column-gap: 2rem;
 	}
 

@@ -48,6 +48,10 @@ function notesSaveToLocalStorage() {
 	localStorage.setItem(gNotesKey, JSON.stringify(gNotes));
 }
 
+function notesClear() {
+	gNotes = [];
+}
+
 //
 // First Run
 //
@@ -56,6 +60,7 @@ renderAllNotes(gNotes);
 
 //
 // View
+// TODO: Only setup global variables again only if pre-redenred items gets cleared
 // TODO: fade-in / fade-out helper functions
 // TODO: render notes list?
 // TODO: render note view
@@ -64,14 +69,49 @@ renderAllNotes(gNotes);
 // TODO: move every priece of code in this app that changes the html to this place (View)
 //
 function renderAllNotes(notes) {
+	// NOTE: Should I render all pre-rendered html here?
+
+	const appMainContainer = document.getElementById('app-main-container');
+
+	// Modal box (cancel, confirm) for actions
+	if(document.getElementById('modal-box-container') === null) {
+		const modalBoxContainer = document.createElement('div');
+		modalBoxContainer.setAttribute('id', 'modal-box-container');
+		modalBoxContainer.appendChild(document.createElement('div'));
+		appMainContainer.appendChild(modalBoxContainer);
+	}
+
+	if(document.getElementById('btn-actions-container') === null) {
+		const btnActionsContainer = document.createElement('div');
+		btnActionsContainer.setAttribute('id', 'btn-actions-container');
+		appMainContainer.appendChild(btnActionsContainer);
+
+		// Create note action container
+		const addActionContainer = document.createElement('div');
+		addActionContainer.innerText = '';
+		addActionContainer.setAttribute('id', 'add-action');
+		addActionContainer.onclick = addNoteAction;
+		btnActionsContainer.appendChild(addActionContainer);
+
+		// Clear all notes action container
+		const clearAllNotesActionContainer = document.createElement('div');
+		clearAllNotesActionContainer.innerText = '';
+		clearAllNotesActionContainer.setAttribute('id', 'clear-action');
+		clearAllNotesActionContainer.onclick = clearAllNotesAction;
+		btnActionsContainer.appendChild(clearAllNotesActionContainer);
+
+		// Backup action container
+		const backupActionContainer = document.createElement('div');
+		backupActionContainer.innerText = '';
+		backupActionContainer.setAttribute('id', 'backup-action');
+		backupActionContainer.onclick = backupNotes;
+		btnActionsContainer.appendChild(backupActionContainer);
+	}
+	
 	let noteSection;
 	const notesContainer = document.getElementById('main-content');
 	notesContainer.innerHTML = '';
 
-	const addActionContainer = document.createElement('div');
-	addActionContainer.innerText = '';
-	addActionContainer.setAttribute('id', 'add-action');
-	notesContainer.appendChild(addActionContainer);
 	
 	// fade-in (notesList)
 	{
@@ -119,15 +159,15 @@ function renderAllNotes(notes) {
 
 
 
-
 //
 // Controller
 //
-const gMainContentContainer = document.getElementById('main-content');
-const gNoteViewContainer = document.getElementById('note-view');
-const gNotesListContainer = document.getElementById('notes-list');
+let gMainContentContainer = document.getElementById('main-content');
+let gNoteViewContainer = document.getElementById('note-view');
+let gNotesListContainer = document.getElementById('notes-list');
 
 function preRenderSetup() {
+
 	// Checking if there's data to be loaded from local storage
 	{
 		const notesAppByDSLDataInLocalStorage = JSON.parse(localStorage.getItem(gNotesKey));
@@ -189,39 +229,24 @@ gMainContentContainer.addEventListener('click', function(event) {
 			}
 		}
 
-		// fade-out notes list and fade-in of note-view
-		{
-			gNotesListContainer.classList.remove('visible');
-			document.body.style = 'overflow: hidden;';
-			gNoteViewContainer.classList.remove('hidden-container');
-
-			setTimeout(function() {
-				gNotesListContainer.classList.add('hidden-container');
-				document.body.style = 'overflow: auto;';
-				window.scrollTo(0,0);
-				gNoteViewContainer.classList.add('visible');
-				document.getElementById('note-view-section').classList.add('visible');
-			}, gTimeoutFadeEffectInMs*2);
-		}
+		fadeOutInEffect(gNotesListContainer, gNoteViewContainer);
+		fadeInEffect(document.getElementById('note-view-section'));
+		fadeOutEffect(document.getElementById('btn-actions-container'));
 	}
 });
 
-// NOTE: Click event -> go back (from note view to note list) & delete note
+// NOTE: Click event -> go back (from note view to note list)
+// NOTE: Click event -> delete note
+// NOTE: (TODO) Click event -> edit note
 gNoteViewContainer.addEventListener('click', function(event) {
 	// Go back Action
 	if(event.target.classList.contains('note-view-go-back-action')) {
 		const noteViewSectionToRemove = document.getElementById('note-view-section');
-		gNoteViewContainer.classList.remove('visible');
-		document.body.style = 'overflow: hidden;';
+		fadeOutInEffect(gNoteViewContainer, gNotesListContainer);
+		fadeInEffect(document.getElementById('btn-actions-container'));
+
 		setTimeout(function() {
 			noteViewSectionToRemove.remove();
-			gNotesListContainer.classList.remove('hidden-container');
-			gNoteViewContainer.classList.add('hidden-container');
-			document.body.style = 'overflow: auto;';
-		}, gTimeoutFadeEffectInMs*2);
-		
-		setTimeout(function() {
-			gNotesListContainer.classList.add('visible');
 		}, gTimeoutFadeEffectInMs*3);
 	}
 
@@ -230,81 +255,103 @@ gNoteViewContainer.addEventListener('click', function(event) {
 	// Delete note action
 	if(event.target.classList.contains('note-view-delete-action')) {
 		// TODO: 'Are you sure?' confirmation box
-		// fade-out note view container, fade-in notes list
-		{
-			gNoteViewContainer.classList.remove('visible');
-			const noteViewSectionToRemove = document.getElementById('note-view-section');
-			const noteIdToRemove = noteViewSectionToRemove.dataset.id;
-			noteRemove(noteIdToRemove);
-			notesSaveToLocalStorage();
 
-			setTimeout(function() {
-				noteViewSectionToRemove.remove();
-				gNoteViewContainer.classList.add('hidden-container');
-				gNotesListContainer.classList.remove('hidden-container');
-			}, gTimeoutFadeEffectInMs*2);
+		const noteViewSectionToRemove = document.getElementById('note-view-section');
+		const noteIdToRemove = noteViewSectionToRemove.dataset.id;
+		noteRemove(noteIdToRemove);
+		notesSaveToLocalStorage();
 
-			setTimeout(function() {
-				for(let i = 0; i < gMainContentContainer.childNodes.length; ++i) {
-					if(gMainContentContainer.childNodes[i].dataset.id === noteIdToRemove) {
-						gMainContentContainer.childNodes[i].remove();
-						break;
-					}
+		fadeOutInEffect(gNoteViewContainer, gNotesListContainer);
+		fadeInEffect(document.getElementById('btn-actions-container'));
+
+		setTimeout(function() {
+			noteViewSectionToRemove.remove();
+			for(let i = 0; i < gMainContentContainer.childNodes.length; ++i) {
+				if(gMainContentContainer.childNodes[i].dataset.id === noteIdToRemove) {
+					gMainContentContainer.childNodes[i].remove();
+					break;
 				}
-				gNotesListContainer.classList.add('visible');
-			}, gTimeoutFadeEffectInMs*3);
-		}
+			}
+		}, gTimeoutFadeEffectInMs*2);
 	}
 });
+
+// NOTE: Fade-out and fade-in containers on the page
+function fadeOutInEffect(containerToFadeOut, containerToFadeIn) {
+	if(containerToFadeOut === null || containerToFadeIn === null) {
+		return console.error('Container to fade-out is null!');
+	}
+
+	containerToFadeOut.classList.add('invisible');
+	containerToFadeOut.classList.remove('visible');
+	document.body.style = 'overflow: hidden;';
+	setTimeout(function() {
+		containerToFadeIn.classList.remove('hidden-container');
+		containerToFadeOut.classList.add('hidden-container');
+		document.body.style = 'overflow-y: auto;';
+	}, gTimeoutFadeEffectInMs*2);
+
+	setTimeout(function() {
+		containerToFadeIn.classList.add('visible');
+	}, gTimeoutFadeEffectInMs*3);
+}
+
+// NOTE: Fade-out container
+function fadeOutEffect(container) {
+	container.classList.add('invisible');
+	container.classList.remove('visible');
+	setTimeout(function() {
+		container.classList.add('hidden-container');
+	}, gTimeoutFadeEffectInMs*2);
+}
+
+// NOTE: Fade-in container
+function fadeInEffect(container) {
+	container.classList.remove('hidden-container');
+	setTimeout(function() {
+		container.classList.add('visible');
+	}, gTimeoutFadeEffectInMs*2);
+}
 
 // NOTE: Click event -> add a new note
-const gNoteCreationContainer = document.getElementById('note-creation');
-const btnAddAction = document.getElementById('add-action');
-btnAddAction.addEventListener('click', function(event) {
+function addNoteAction(event) {
 	document.getElementById('note-creation-title-input').value = '';
 	document.getElementById('note-creation-content-input').value = '';
-	// fade-out notes list container, fade-in note creation container
-	{
-		gNotesListContainer.classList.add('invisible');
-		gNotesListContainer.classList.remove('visible');
-		document.body.style = 'overflow: hidden;';
-		gNoteCreationContainer.classList.remove('hidden-container');
-		setTimeout(function() {
-			document.body.style = 'overflow-y: auto;';
-			gNotesListContainer.classList.add('hidden-container');
-			gNoteCreationContainer.classList.add('visible');
-		}, gTimeoutFadeEffectInMs*2); // *2 because we need to wait for the fade-out animation to finish
-	}
-});
+	noteCreationContainer = document.getElementById('note-creation');
+	
+	fadeOutInEffect(gNotesListContainer, noteCreationContainer);
+	fadeOutEffect(document.getElementById('btn-actions-container'));
+}
+
+// NOTE: Click event -> clear all notes
+function clearAllNotesAction(event) {
+	// TODO: 'Are you sure?' confirmation modal box
+	notesClear();
+	notesSaveToLocalStorage();
+	renderAllNotes(gNotes);
+}
+
+// NOTE: Click event -> backup notes
+function backupNotes(event) {
+	// TODO: modal box (import data, export data, save to?[disk, drive, dropbox], close)
+}
 
 // NOTE: Click event -> cancel new note creation
-const btnCancelNoteCreation = document.querySelector('.cancel-btn');
-btnCancelNoteCreation.addEventListener('click', function(event) {
-	// fade-out note creation container, fade-in notes list
-	{
-		gNoteCreationContainer.classList.remove('visible');
-		document.body.style = 'overflow: hidden;';
-		setTimeout(function() {
-			document.body.style = 'overflow-y: auto;';
-			gNotesListContainer.classList.remove('hidden-container');
-			gNoteCreationContainer.classList.add('hidden-container');
-		}, gTimeoutFadeEffectInMs*2);
-
-		setTimeout(function() {
-			gNotesListContainer.classList.add('visible');	
-		}, gTimeoutFadeEffectInMs*3);
-	}
+let gBtnCancelNoteCreation = document.querySelector('.cancel-btn');
+gBtnCancelNoteCreation.addEventListener('click', function(event) {
+	fadeOutInEffect(document.getElementById('note-creation'), gNotesListContainer);
+	fadeInEffect(document.getElementById('btn-actions-container'));
 });
 
 // NOTE: Click event -> create note (button)
-const btnCreateNote = document.querySelector('.create-btn');
-btnCreateNote.addEventListener('click', function(event) {
+let gBtnCreateNote = document.querySelector('.create-btn');
+gBtnCreateNote.addEventListener('click', function(event) {
 	// Note title validation
 	const noteTitleInput = document.getElementById('note-creation-title-input');
 	{
 		if(noteTitleInput.value.length < 3) {
 			console.log('The note title must be greater than 3.');
-			// TODO: model box
+			// TODO: modal box
 			return;
 		}
 
@@ -372,24 +419,6 @@ btnCreateNote.addEventListener('click', function(event) {
 		gMainContentContainer.appendChild(newNoteSection);
 	}
 
-	// fade-out note creation container and fade-in notes list
-	{
-		gNoteCreationContainer.classList.remove('visible');
-
-		setTimeout(function() {
-			gNoteCreationContainer.classList.add('hidden-container');
-			gNotesListContainer.classList.remove('hidden-container');
-			
-		}, gTimeoutFadeEffectInMs*2);
-
-		setTimeout(function() {
-			gNotesListContainer.classList.add('visible');
-			// renderNotes(gNotes);
-
-			
-		}, gTimeoutFadeEffectInMs*3);
-	}
-
-	// use dataset to apply the id to the note container
-
+	fadeOutInEffect(document.getElementById('note-creation'), gNotesListContainer);
+	fadeInEffect(document.getElementById('btn-actions-container'));
 });

@@ -6,6 +6,10 @@
 		max-width: $desktop-min-width + 320px;
 	}
 
+	div#notes-list main#main-content {
+		grid-template-columns: 1fr 1fr 1fr;
+	}
+
 	div#note-view {
 		header#note-view-header {
 			max-width: $desktop-min-width + 320px;
