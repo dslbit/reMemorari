@@ -26,7 +26,7 @@ let gNotes = []; // feed in preRenderSetup()
 const gTimeoutFadeEffectInMs = 90;
 
 function noteCreate(noteId, noteTitle, noteContent, noteCreatedDate) {
-	gNotes.push({
+	gNotes.unshift({
 		id: noteId,
 		title: noteTitle,
 		content: noteContent,
@@ -61,7 +61,6 @@ renderAllNotes(gNotes);
 //
 // View
 // TODO: Only setup global variables again only if pre-redenred items gets cleared
-// TODO: fade-in / fade-out helper functions
 // TODO: render notes list?
 // TODO: render note view
 // TODO: render note creation
@@ -69,18 +68,23 @@ renderAllNotes(gNotes);
 // TODO: move every priece of code in this app that changes the html to this place (View)
 //
 function renderAllNotes(notes) {
-	// NOTE: Should I render all pre-rendered html here?
+	// NOTE: Should I render all pre-rendered html here? If I do that I don't need global variables with addEventListeners,
+	// but on the other hand I would need to pre-render everything here instead of using static html, otherwise things
+	// can get more ugly.
 
 	const appMainContainer = document.getElementById('app-main-container');
 
 	// Modal box (cancel, confirm) for actions
+	// If static html for the modal box doesn't exist
 	if(document.getElementById('modal-box-container') === null) {
 		const modalBoxContainer = document.createElement('div');
 		modalBoxContainer.setAttribute('id', 'modal-box-container');
+		modalBoxContainer.classList.add('invisible', 'hidden-container');
 		modalBoxContainer.appendChild(document.createElement('div'));
 		appMainContainer.appendChild(modalBoxContainer);
 	}
 
+	// If static html for the buttons action doesn't exist
 	if(document.getElementById('btn-actions-container') === null) {
 		const btnActionsContainer = document.createElement('div');
 		btnActionsContainer.setAttribute('id', 'btn-actions-container');
@@ -111,13 +115,11 @@ function renderAllNotes(notes) {
 	let noteSection;
 	const notesContainer = document.getElementById('main-content');
 	notesContainer.innerHTML = '';
-
 	
-	// fade-in (notesList)
+	// fade-in (notesList) manually
 	{
 		const notesList = document.getElementById('notes-list');
 		notesList.classList.add('invisible');
-		// notesList.innerHTML = ''
 		
 		setTimeout(function() {
 			notesList.classList.add('visible');
@@ -192,6 +194,49 @@ function preRenderSetup() {
 	}
 }
 
+// NOTE: Fade-out and fade-in containers on the page
+function fadeOutInEffect(containerToFadeOut, containerToFadeIn) {
+	if(containerToFadeOut === null || containerToFadeIn === null) {
+		return console.error('Container to fade-out is null!');
+	}
+
+	containerToFadeOut.classList.add('invisible');
+	containerToFadeOut.classList.remove('visible');
+	document.body.style = 'overflow: hidden;';
+	setTimeout(function() {
+		containerToFadeIn.classList.remove('hidden-container');
+		containerToFadeOut.classList.add('hidden-container');
+		document.body.style = 'overflow-y: auto;';
+	}, gTimeoutFadeEffectInMs*2);
+
+	setTimeout(function() {
+		containerToFadeIn.classList.add('visible');
+	}, gTimeoutFadeEffectInMs*3);
+}
+
+// NOTE: Fade-out container
+function fadeOutEffect(container) {
+	container.classList.add('invisible');
+	container.classList.remove('visible');
+	setTimeout(function() {
+		container.classList.add('hidden-container');
+	}, gTimeoutFadeEffectInMs*2);
+}
+
+// NOTE: Fade-in container
+function fadeInEffect(container) {
+	container.classList.remove('hidden-container');
+	setTimeout(function() {
+		container.classList.add('visible');
+	}, gTimeoutFadeEffectInMs*2);
+}
+
+// NOTE: Click event -> modal box (GENERAL CANCEL)
+function modalBoxCancelDefaultBehaviour() {
+	fadeOutEffect(document.getElementById('modal-box-container'));
+	document.body.style = 'overflow: auto;';
+}
+
 // NOTE: Click event -> view note
 gMainContentContainer.addEventListener('click', function(event) {
 	if(event.target.classList.contains('note')) {
@@ -235,6 +280,29 @@ gMainContentContainer.addEventListener('click', function(event) {
 	}
 });
 
+function deleteNoteModalBoxConfirmation() {
+	const noteViewSectionToRemove = document.getElementById('note-view-section');
+	const noteIdToRemove = noteViewSectionToRemove.dataset.id;
+	noteRemove(noteIdToRemove);
+	notesSaveToLocalStorage();
+
+	fadeOutInEffect(gNoteViewContainer, gNotesListContainer);
+	fadeInEffect(document.getElementById('btn-actions-container'));
+
+	setTimeout(function() {
+		noteViewSectionToRemove.remove();
+		for(let i = 0; i < gMainContentContainer.childNodes.length; ++i) {
+			if(gMainContentContainer.childNodes[i].dataset.id === noteIdToRemove) {
+				gMainContentContainer.childNodes[i].remove();
+				break;
+			}
+		}
+	}, gTimeoutFadeEffectInMs*2);
+
+	fadeOutEffect(document.getElementById('modal-box-container'));
+	document.body.style = 'overflow: auto;';
+}
+
 // NOTE: Click event -> go back (from note view to note list)
 // NOTE: Click event -> delete note
 // NOTE: (TODO) Click event -> edit note
@@ -256,62 +324,51 @@ gNoteViewContainer.addEventListener('click', function(event) {
 	if(event.target.classList.contains('note-view-delete-action')) {
 		// TODO: 'Are you sure?' confirmation box
 
-		const noteViewSectionToRemove = document.getElementById('note-view-section');
-		const noteIdToRemove = noteViewSectionToRemove.dataset.id;
-		noteRemove(noteIdToRemove);
-		notesSaveToLocalStorage();
+		const modalBox = document.getElementById('modal-box-container');
+		if(modalBox === null) {
+			return console.error(`Modal box doesn't exist, WTF?`);
+		}
+		// console.log(modalBox);
+		modalBox.innerHTML = '';
+		
+		const modalBoxSection = document.createElement('div');
+		modalBoxSection.classList.add('modal-box-section');
+		modalBox.appendChild(modalBoxSection);
 
-		fadeOutInEffect(gNoteViewContainer, gNotesListContainer);
-		fadeInEffect(document.getElementById('btn-actions-container'));
+		const modalBoxTitleSection = document.createElement('div');
+		modalBoxTitleSection.innerText = 'Are you sure you want to erase this note permanently?';
+		modalBoxTitleSection.classList.add('modal-box-title-section');
+		modalBoxSection.appendChild(modalBoxTitleSection);
+		
+		const buttonsSection = document.createElement('div');
+		buttonsSection.classList.add('modal-box-buttons-section');
+		modalBoxSection.appendChild(buttonsSection);
 
-		setTimeout(function() {
-			noteViewSectionToRemove.remove();
-			for(let i = 0; i < gMainContentContainer.childNodes.length; ++i) {
-				if(gMainContentContainer.childNodes[i].dataset.id === noteIdToRemove) {
-					gMainContentContainer.childNodes[i].remove();
-					break;
-				}
-			}
-		}, gTimeoutFadeEffectInMs*2);
+		const btnCancel = document.createElement('div');
+		btnCancel.innerText = 'cancel';
+		btnCancel.setAttribute('id', 'modal-box-cancel-btn');
+		btnCancel.onclick = modalBoxCancelDefaultBehaviour;
+		buttonsSection.appendChild(btnCancel);
+
+		const btnConfirm = document.createElement('div');
+		btnConfirm.innerText = 'confirm';
+		btnConfirm.onclick = deleteNoteModalBoxConfirmation;
+		btnConfirm.setAttribute('id', 'modal-box-confirm-btn');
+		buttonsSection.appendChild(btnConfirm);
+
+		fadeInEffect(modalBox);
+		window.scrollTo(0, 0);
+		/*window.scrollTo({
+			top: document.body.clientHeight/2.3,
+			left: 0,
+			behavior: 'smooth',
+		});
+		*/
+		// document.body.style = 'overflow: hidden;';
+
+		
 	}
 });
-
-// NOTE: Fade-out and fade-in containers on the page
-function fadeOutInEffect(containerToFadeOut, containerToFadeIn) {
-	if(containerToFadeOut === null || containerToFadeIn === null) {
-		return console.error('Container to fade-out is null!');
-	}
-
-	containerToFadeOut.classList.add('invisible');
-	containerToFadeOut.classList.remove('visible');
-	document.body.style = 'overflow: hidden;';
-	setTimeout(function() {
-		containerToFadeIn.classList.remove('hidden-container');
-		containerToFadeOut.classList.add('hidden-container');
-		document.body.style = 'overflow-y: auto;';
-	}, gTimeoutFadeEffectInMs*2);
-
-	setTimeout(function() {
-		containerToFadeIn.classList.add('visible');
-	}, gTimeoutFadeEffectInMs*3);
-}
-
-// NOTE: Fade-out container
-function fadeOutEffect(container) {
-	container.classList.add('invisible');
-	container.classList.remove('visible');
-	setTimeout(function() {
-		container.classList.add('hidden-container');
-	}, gTimeoutFadeEffectInMs*2);
-}
-
-// NOTE: Fade-in container
-function fadeInEffect(container) {
-	container.classList.remove('hidden-container');
-	setTimeout(function() {
-		container.classList.add('visible');
-	}, gTimeoutFadeEffectInMs*2);
-}
 
 // NOTE: Click event -> add a new note
 function addNoteAction(event) {
@@ -323,12 +380,51 @@ function addNoteAction(event) {
 	fadeOutEffect(document.getElementById('btn-actions-container'));
 }
 
-// NOTE: Click event -> clear all notes
-function clearAllNotesAction(event) {
-	// TODO: 'Are you sure?' confirmation modal box
+function clearAllNotesModalBoxConfirmation() {
 	notesClear();
 	notesSaveToLocalStorage();
+	fadeOutEffect(document.getElementById('modal-box-container'));
 	renderAllNotes(gNotes);
+}
+
+// NOTE: Click event -> clear all notes
+function clearAllNotesAction(event) {
+	// 'Are you sure?' confirmation modal box
+	const modalBox = document.getElementById('modal-box-container');
+	if(modalBox === null) {
+		return console.error(`Modal box doesn't exist, WTF?`);
+	}
+	// console.log(modalBox);
+	modalBox.innerHTML = '';
+	
+	const modalBoxSection = document.createElement('div');
+	modalBoxSection.classList.add('modal-box-section');
+	modalBox.appendChild(modalBoxSection);
+
+	const modalBoxTitleSection = document.createElement('div');
+	modalBoxTitleSection.innerText = 'Are you sure you want to erase all notes permanently?';
+	modalBoxTitleSection.classList.add('modal-box-title-section');
+	modalBoxSection.appendChild(modalBoxTitleSection);
+	
+	const buttonsSection = document.createElement('div');
+	buttonsSection.classList.add('modal-box-buttons-section');
+	modalBoxSection.appendChild(buttonsSection);
+
+	const btnCancel = document.createElement('div');
+	btnCancel.innerText = 'cancel';
+	btnCancel.setAttribute('id', 'modal-box-cancel-btn');
+	btnCancel.onclick = modalBoxCancelDefaultBehaviour;
+	buttonsSection.appendChild(btnCancel);
+
+	const btnConfirm = document.createElement('div');
+	btnConfirm.innerText = 'confirm';
+	btnConfirm.onclick = clearAllNotesModalBoxConfirmation;
+	btnConfirm.setAttribute('id', 'modal-box-confirm-btn');
+	buttonsSection.appendChild(btnConfirm);
+
+	fadeInEffect(modalBox);
+	window.scrollTo(0, 0);
+	document.body.style = 'overflow: hidden;';
 }
 
 // NOTE: Click event -> backup notes
@@ -416,7 +512,7 @@ gBtnCreateNote.addEventListener('click', function(event) {
 		newNoteDate.classList.add('note-date');
 		newNoteSection.appendChild(newNoteDate);
 
-		gMainContentContainer.appendChild(newNoteSection);
+		gMainContentContainer.prepend(newNoteSection);
 	}
 
 	fadeOutInEffect(document.getElementById('note-creation'), gNotesListContainer);
