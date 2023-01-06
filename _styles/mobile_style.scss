@@ -30,6 +30,30 @@ body {
 	transition: opacity 0.1s;
 }
 
+input,
+textarea {
+	width: 100%;
+	max-width: 100%;
+	min-height: 5rem;
+	padding: 1rem;
+	margin-bottom: 3rem;
+	background-color: $color-black;
+	box-shadow: inset 0px 0px 5px rgba($color-white, 0.3);
+	border: none;
+	border-radius: 4px;
+	outline: none;
+	transition: box-shadow 0.25s;
+
+	&:focus {
+		box-shadow: inset 0px 0px 10px rgba($color-white, 0.5);
+	}
+}
+
+textarea {
+	min-height: 55vh;
+	resize: none;
+}
+
 div#app-main-container {
 	// position: relative;
 	width: 100%;
@@ -76,6 +100,7 @@ div#app-main-container {
 		div.modal-box-title-section {
 			text-align: center;
 			margin-bottom: 2rem;
+			font-weight: bold;
 		}
 
 		div.modal-box-buttons-section {
@@ -95,22 +120,22 @@ div#app-main-container {
 
 			div#modal-box-cancel-btn {
 				margin-right: 1rem;
-				border: 1px solid rgba($color-orange, 0.3);
+				border: 1px solid rgba($color-orange, 0.8);
 
 				&:hover {
 					color: $color-orange;
-					border: 1px solid rgba($color-orange, 0.5);
+					border: 1px solid rgba($color-orange, 1);
 					box-shadow: inset 0px 0px 10px rgba($color-orange, 0.3);
 				}
 			}
 
 			div#modal-box-confirm-btn {
 				margin-left: 1rem;
-				border: 1px solid rgba($color-green, 0.3);
+				border: 1px solid rgba($color-green, 0.8);
 
 				&:hover {
 					color: $color-green;
-					border: 1px solid rgba($color-green, 0.5);
+					border: 1px solid rgba($color-green, 1);
 					box-shadow: inset 0px 0px 10px rgba($color-green, 0.3);
 				}
 				
@@ -282,12 +307,67 @@ div#note-view {
 				font-size: 2rem;
 				text-indent: justify-content;
 			}
+
+			input {
+				margin-bottom: 0px;
+			}
 		}
 
 		div.note-view-content {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
 			margin-bottom: 2rem;
 			font-size: 1.25rem;
-			text-indent: 1rem;
+			// text-indent: 1rem;
+
+			textarea {
+				margin-bottom: 2rem;
+			}
+
+			div.note-editing-buttons-container {
+				width: 100%;
+				display: flex;
+				justify-content: space-around;
+				
+				button {
+					padding: 1.25rem 2rem;
+					background-color: $color-black;
+					cursor: pointer;
+					text-transform: uppercase;
+					border-radius: 4px;
+					transition: box-shadow 0.15s, opacity 0.085s, background-color 0.15s, border 0.15s, color 0.15s;
+				}
+
+				button#cancel-note-editing-btn {
+					border: 1px solid rgba($color-orange, 0.8);
+
+					&:hover {
+						color: $color-orange;
+						border: 1px solid rgba($color-orange, 0.5);
+						box-shadow: inset 0px 0px 10px rgba($color-orange, 0.3);
+					}
+
+					&:active {
+						box-shadow: inset 0px 0px 10px rgba($color-orange, 1);
+					}
+				}
+
+				button#confirm-note-editing-btn {
+					border: 1px solid rgba($color-green, 0.8);
+
+					&:hover {
+						color: $color-orange;
+						border: 1px solid rgba($color-green, 0.5);
+						box-shadow: inset 0px 0px 10px rgba($color-green, 0.3);
+					}
+
+					&:active {
+						box-shadow: inset 0px 0px 10px rgba($color-green, 1);
+					}
+				}
+			}
 		}
 
 		div.note-date-created {
@@ -299,30 +379,6 @@ div#note-view {
 div#note-creation {
 	padding: 1rem;
 	user-select: none;
-
-	input,
-	textarea {
-		width: 100%;
-		max-width: 100%;
-		min-height: 5rem;
-		padding: 1rem;
-		margin-bottom: 3rem;
-		background-color: $color-black;
-		box-shadow: inset 0px 0px 5px rgba($color-white, 0.3);
-		border: none;
-		border-radius: 4px;
-		outline: none;
-		transition: box-shadow 0.25s;
-
-		&:focus {
-			box-shadow: inset 0px 0px 10px rgba($color-white, 0.5);
-		}
-	}
-
-	textarea {
-		min-height: 55vh;
-		resize: none;
-	}
 
 	div.confirmation-buttons {
 		width: 100%;

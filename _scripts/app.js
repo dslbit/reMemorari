@@ -52,6 +52,28 @@ function notesClear() {
 	gNotes = [];
 }
 
+function noteEdit(noteId, newNoteData) {
+	for(let i = 0; i < gNotes.length; ++i) {
+		if(gNotes[i].id === noteId) {
+			// edit data and save
+			gNotes[i] = newNoteData;
+			notesSaveToLocalStorage();
+			break;
+		}
+	}
+}
+
+function noteGetById(noteId) {
+	for(let i = 0; i < gNotes.length; ++i) {
+		if(gNotes[i].id === noteId) {
+			return gNotes[i];
+			break;
+		}
+	}
+}
+
+
+
 //
 // First Run
 //
@@ -139,15 +161,22 @@ function renderAllNotes(notes) {
 		noteTitle.classList.add('note-title');
 		noteSection.appendChild(noteTitle);
 
+		// NOTE: this piece of code is coppied more than 2 times, what can I do with it?
 		const noteContentPreview = document.createElement('div');
 		{
 			let endContentStrIndex;
+			let addThreeDots = false;
 			if(note.content.length < 280) {
 				endContentStrIndex = note.content.length;
 			} else {
 				endContentStrIndex = 280;
+				addThreeDots = true;
 			}
-			noteContentPreview.textContent = note.content.slice(0, endContentStrIndex) + '...';
+			if(addThreeDots) {
+				noteContentPreview.textContent = note.content.slice(0, endContentStrIndex) + '...';
+			} else {
+				noteContentPreview.textContent = note.content.slice(0, endContentStrIndex)
+			}
 		}
 		noteContentPreview.classList.add('note-preview');
 		noteSection.appendChild(noteContentPreview);
@@ -305,7 +334,7 @@ function deleteNoteModalBoxConfirmation() {
 
 // NOTE: Click event -> go back (from note view to note list)
 // NOTE: Click event -> delete note
-// NOTE: (TODO) Click event -> edit note
+// NOTE: Click event -> edit note
 gNoteViewContainer.addEventListener('click', function(event) {
 	// Go back Action
 	if(event.target.classList.contains('note-view-go-back-action')) {
@@ -318,7 +347,52 @@ gNoteViewContainer.addEventListener('click', function(event) {
 		}, gTimeoutFadeEffectInMs*3);
 	}
 
-	// TODO: edit action
+	// Edit note action
+	if(event.target.classList.contains('note-view-edit-action')) {
+		const noteId = document.getElementById('note-view-section').dataset.id;
+		let note = noteGetById(noteId);
+		
+		const noteTitle = document.querySelector('.note-view-title');
+		const noteTitleMaxLength = document.getElementById('note-creation-title-input').maxlength;
+		noteTitle.innerHTML = '';
+		const titleInput = document.createElement('input');
+		titleInput.id = 'note-edit-title-input';
+		titleInput.type = 'text';
+		titleInput.name = 'note-title';
+		titleInput.minlength = 3;
+		titleInput.maxlength = noteTitleMaxLength;
+		titleInput.value = note.title;
+		noteTitle.appendChild(titleInput);
+		
+		const noteContent = document.querySelector('.note-view-content');
+		noteContent.innerHTML = '';
+		const contentTextArea = document.createElement('textarea');
+		contentTextArea.id = 'note-edit-content-input';
+		contentTextArea.type = 'text';
+		contentTextArea.name = 'note-content';
+		contentTextArea.spellcheck = false;
+		contentTextArea.wrap = 'soft';
+		contentTextArea.textContent = note.content;
+		noteContent.appendChild(contentTextArea);
+
+		const buttonsContainer = document.createElement('div');
+		buttonsContainer.classList.add('note-editing-buttons-container');
+		noteContent.appendChild(buttonsContainer);
+
+		// Cancel note editing
+		const cancelBtn = document.createElement('button');
+		cancelBtn.id = 'cancel-note-editing-btn';
+		cancelBtn.onclick = noteEditingCanceled;
+		cancelBtn.innerText = 'cancel';
+		buttonsContainer.appendChild(cancelBtn);
+
+		// Confirm note editing
+		const confirmBtn = document.createElement('button');
+		confirmBtn.id = 'confirm-note-editing-btn';
+		confirmBtn.onclick = noteEditingConfirmed;
+		confirmBtn.innerText = 'confirm';
+		buttonsContainer.appendChild(confirmBtn);
+	}
 
 	// Delete note action
 	if(event.target.classList.contains('note-view-delete-action')) {
@@ -369,6 +443,88 @@ gNoteViewContainer.addEventListener('click', function(event) {
 		
 	}
 });
+
+function noteEditingCanceled() {
+	// console.log('editing canceled!');
+	const noteId = document.getElementById('note-view-section').dataset.id;
+	const note = noteGetById(noteId);
+
+	const noteViewTitleContainer = document.querySelector('.note-view-title');
+	noteViewTitleContainer.innerHTML = '';
+	const noteTitle = document.createElement('h2');
+	noteTitle.innerText = note.title;
+	noteViewTitleContainer.appendChild(noteTitle);
+
+	const noteViewContentContainer = document.querySelector('.note-view-content');
+	noteViewContentContainer.innerHTML = note.content.replaceAll('\n', '<br>');
+}
+
+function noteEditingConfirmed() {
+	const noteId = document.getElementById('note-view-section').dataset.id;
+	const oldNote = noteGetById(noteId);
+
+	const noteViewTitleContainer = document.querySelector('.note-view-title');
+	const noteTitle = document.createElement('h2');
+	noteTitle.innerText = document.getElementById('note-edit-title-input').value;
+	noteViewTitleContainer.innerHTML = '';
+	noteViewTitleContainer.appendChild(noteTitle);
+
+	const noteViewContentContainer = document.querySelector('.note-view-content');
+	const noteContentInput = document.getElementById('note-edit-content-input');
+	noteViewContentContainer.innerHTML = noteContentInput.value.replaceAll('\n', '<br>');;
+	// noteViewContentContainer.textContent = noteContentInput.value;
+
+	const newNoteContent = {
+		id: noteId,
+		title: noteTitle.innerText,
+		content: noteContentInput.value,
+		createdDate: oldNote.createdDate
+	}
+	noteEdit(noteId, newNoteContent);
+
+	// update note preview in note-list section
+	{
+		const notes = document.querySelectorAll('.note');
+		let noteSectionToChange;
+		for(let i = 0; i < notes.length; ++i) {
+			if(notes[i].dataset.id === noteId) {
+				noteSectionToChange = notes[i];
+				break;
+			}
+		}
+
+		noteSectionToChange.innerHTML = '';
+
+		const newNoteTitle = document.createElement('div');
+		newNoteTitle.textContent = newNoteContent.title;
+		newNoteTitle.classList.add('note-title');
+		noteSectionToChange.appendChild(newNoteTitle);
+		
+		const newNotePreview = document.createElement('div');
+		{
+			let endContentStrIndex = 0;
+			let addThreeDots = false;
+			if(newNoteContent.content.length < 280) {
+				endContentStrIndex = newNoteContent.content.length;
+			} else {
+				endContentStrIndex = 280;
+				addThreeDots = true;
+			}
+			if(addThreeDots) {
+				newNotePreview.textContent = newNoteContent.content.slice(0, endContentStrIndex) + '...';
+			} else {
+				newNotePreview.textContent = newNoteContent.content.slice(0, endContentStrIndex)
+			}
+		}
+		newNotePreview.classList.add('note-preview');
+		noteSectionToChange.appendChild(newNotePreview);
+
+		const newNoteDate = document.createElement('div');
+		newNoteDate.textContent = 'Created: ' + newNoteContent.createdDate;
+		newNoteDate.classList.add('note-date');
+		noteSectionToChange.appendChild(newNoteDate);
+	}
+}
 
 // NOTE: Click event -> add a new note
 function addNoteAction(event) {
@@ -495,14 +651,21 @@ gBtnCreateNote.addEventListener('click', function(event) {
 		newNoteSection.appendChild(newNoteTitle);
 		
 		const newNotePreview = document.createElement('div');
+
 		{
 			let endContentStrIndex = 0;
+			let addThreeDots = false;
 			if(notesContent.length < 280) {
 				endContentStrIndex = notesContent.length;
 			} else {
 				endContentStrIndex = 280;
+				addThreeDots = true;
 			}
-			newNotePreview.textContent = notesContent.slice(0, endContentStrIndex) + '...';
+			if(addThreeDots) {
+				newNotePreview.textContent = notesContent.slice(0, endContentStrIndex) + '...';
+			} else {
+				newNotePreview.textContent = notesContent.slice(0, endContentStrIndex);
+			}
 		}
 		newNotePreview.classList.add('note-preview');
 		newNoteSection.appendChild(newNotePreview);
