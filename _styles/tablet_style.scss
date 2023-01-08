@@ -4,7 +4,7 @@
 	
 	div#app-main-container {
 		min-width: $tablet-min-width - 100px;
-		max-width: $tablet-max-width;
+		max-width: $tablet-min-width;
 	}
 
 	div#notes-list main#main-content {
@@ -15,14 +15,14 @@
 
 	div#note-view {
 		header#note-view-header {
-			max-width: $tablet-max-width;
+			max-width: $tablet-min-width;
 		}
 
 	}
 
 	div#note-creation {
 		max-width: $tablet-min-width - 100px;
-		margin: 0px auto;
+		margin: 0rem auto;
 
 		input,
 		textarea {

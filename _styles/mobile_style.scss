@@ -1,7 +1,5 @@
 //
-// TODO: model box (cancel / confirm)
 // TODO: hover text labels on buttons
-// TODO: 
 //
 
 @import "./resets";
@@ -13,7 +11,6 @@
 
 body {
 	background-color: $color-black;
-	// position: relative;
 }
 
 .hidden-container {
@@ -30,6 +27,16 @@ body {
 	transition: opacity 0.1s;
 }
 
+button,
+.btn {
+	padding: 1.25rem 2rem;
+	cursor: pointer;
+	text-transform: uppercase;
+	font-size: 1rem;
+	border-radius: 0.333rem;
+	transition: box-shadow 0.15s, opacity 0.085s, background-color 0.15s, border 0.15s, color 0.15s;
+}
+
 input,
 textarea {
 	width: 100%;
@@ -37,15 +44,16 @@ textarea {
 	min-height: 5rem;
 	padding: 1rem;
 	margin-bottom: 3rem;
+	font-size: 1rem;
 	background-color: $color-black;
-	box-shadow: inset 0px 0px 5px rgba($color-white, 0.3);
+	box-shadow: inset 0rem 0rem 0.833rem rgba($color-white, 0.3);
 	border: none;
-	border-radius: 4px;
+	border-radius: 0.333rem;
 	outline: none;
 	transition: box-shadow 0.25s;
 
 	&:focus {
-		box-shadow: inset 0px 0px 10px rgba($color-white, 0.5);
+		box-shadow: inset 0rem 0rem 0.833rem rgba($color-white, 0.5);
 	}
 }
 
@@ -55,21 +63,19 @@ textarea {
 }
 
 div#app-main-container {
-	// position: relative;
 	width: 100%;
 	min-width: $mobile-min-width;
 	max-width: $mobile-max-width;
 	min-height: 100vh;
-	// max-height: 100vh;
-	margin: 0px auto;
+	margin: 0rem auto;
 	background-color: $color-black;
 
 	div#modal-box-container {
 		position: absolute;
 		min-width: 100%;
 		min-height: 100%;
-		top: 0px;
-		left: 0px;
+		top: 0rem;
+		left: 0rem;
 		z-index: 1000;
 		user-select: none;
 		background-color: rgba($color-black, 0.85);
@@ -87,13 +93,13 @@ div#app-main-container {
 			justify-content: center;
 			align-items: center;
 			padding: 2rem;
-			border-radius: 4px;
+			border-radius: 0.333rem;
 			background-color: rgba($color-black, 1);
-			box-shadow: 0px 0px 8px rgba($color-white, 0.3);
+			box-shadow: 0rem 0rem 0.666rem rgba($color-white, 0.3);
 			transition: box-shadow 0.15s;
 
 			&:hover {
-				box-shadow: 0px 0px 15px rgba($color-white, 0.5);
+				box-shadow: 0rem 0rem 1.25rem rgba($color-white, 0.5);
 			}
 		}
 
@@ -105,38 +111,58 @@ div#app-main-container {
 
 		div.modal-box-buttons-section {
 			display: flex;
-			justify-content: center;
+			justify-content: space-around;
 			align-items: center;
 
-			div#modal-box-cancel-btn,
-			div#modal-box-confirm-btn {
-				padding: 1.25rem;
-				border-radius: 4px;
-				text-transform: uppercase;
-				// background-color: rgba($color-white, 0.5);
-				cursor: pointer;
-				transition: box-shadow 0.25s;
+			div#modal-box-import-data-btn,
+			div#modal-box-export-data-btn,
+			div#modal-box-close-btn {
+				padding: 2rem;
+				border: 0.083333rem solid rgba($color-white, 0.5);
+				border-radius: 50%;
+
+				&:hover {
+					box-shadow: inset 0rem 0rem 0.833rem rgba($color-white, 0.3);
+				}
+
+				&:active {
+					box-shadow: inset 0rem 0rem 0.833rem rgba($color-white, 0.6);
+				}
+			}
+
+			div#modal-box-close-btn {
+				background: url('../_icons/icon_close.png') no-repeat center/50% rgba($color-black, 0.85);
+			}
+
+			div#modal-box-import-data-btn {
+				background: url('../_icons/icon_import.png') no-repeat center/40% rgba($color-black, 0.85);
+				margin-right: 2rem;
+			}
+
+			div#modal-box-export-data-btn {
+				background: url('../_icons/icon_export.png') no-repeat center/40% rgba($color-black, 0.85);
+				margin-right: 2rem;
 			}
 
 			div#modal-box-cancel-btn {
 				margin-right: 1rem;
-				border: 1px solid rgba($color-orange, 0.8);
+				border: 0.083333rem solid rgba($color-orange, 0.8);
 
 				&:hover {
 					color: $color-orange;
-					border: 1px solid rgba($color-orange, 1);
-					box-shadow: inset 0px 0px 10px rgba($color-orange, 0.3);
+					border: 0.083333rem solid rgba($color-orange, 1);
+					box-shadow: inset 0rem 0rem 0.833rem rgba($color-orange, 0.3);
 				}
 			}
 
 			div#modal-box-confirm-btn {
 				margin-left: 1rem;
-				border: 1px solid rgba($color-green, 0.8);
+				border: 0.083333rem solid rgba($color-green, 0.8);
 
 				&:hover {
 					color: $color-green;
-					border: 1px solid rgba($color-green, 1);
-					box-shadow: inset 0px 0px 10px rgba($color-green, 0.3);
+					border: 0.083333rem solid rgba($color-green, 1);
+					box-shadow: inset 0rem 0rem 0.833rem rgba($color-green, 0.3);
 				}
 				
 			}
@@ -149,13 +175,12 @@ div#app-main-container {
 	div#backup-action {
 		position: fixed;
 		right: 1.5rem;
-		// transform: translate(50%, 0px);
 		width: 5rem;
 		height: 5rem;
 		padding: 1.5rem;
 		border-radius: 2.5rem;
-		border: 1px solid rgba($color-white, 0.2);
-		box-shadow: 0px 0px 8px rgba($color-white, 0.3);
+		border: 0.083333rem solid rgba($color-white, 0.2);
+		box-shadow: rem rem 0.666rem rgba($color-white, 0.3);
 		cursor: pointer;
 		user-select: none;
 		font-size: 2rem;
@@ -163,13 +188,11 @@ div#app-main-container {
 		z-index: 100;
 
 		&:hover {
-			box-shadow: 0px 0px 15px rgba($color-white, 0.8);
-			// opacity: 0.8;
+			box-shadow: 0rem 0rem 1.25rem rgba($color-white, 0.8);
 		}
 
 		&:active {
-			box-shadow: 0px 0px 30px rgba($color-white, 1);
-			// opacity: 0.2;
+			box-shadow: 0rem 0rem 2.5rem rgba($color-white, 1);
 		}
 	}
 
@@ -206,8 +229,8 @@ div#notes-list main#main-content {
 		justify-content: space-between;
 		padding: 1rem;
 		margin-bottom: 2rem;
-		border-radius: 4px;
-		box-shadow: 0px 0px 5px rgba($color-white, 0.05);
+		border-radius: 0.333rem;
+		box-shadow: 0rem 0rem 0.4166rem rgba($color-white, 0.05);
 		background-color: rgba($color-white, 0.1);
 		cursor: pointer;
 		user-select: none;
@@ -215,7 +238,7 @@ div#notes-list main#main-content {
 
 
 		&:hover {
-			box-shadow: 0px 0px 5px rgba($color-white, 0.4);
+			box-shadow: 0rem 0rem 0.4166rem rgba($color-white, 0.4);
 			opacity: 0.85;
 		}
 
@@ -273,12 +296,12 @@ div#note-view {
 			height: 3rem;
 			padding: 0.65rem;
 			border-radius: 1.5rem;
-			border: 1px solid rgba($color-white, 0.5);
-			box-shadow: 0px 0px 5px rgba($color-white, 0.05);
+			border: 0.083333rem solid rgba($color-white, 0.5);
+			box-shadow: 0rem 0rem 0.4166rem rgba($color-white, 0.05);
 			transition: opacity 0.25s, box-shadow 0.15s;
 
 			&:hover {
-				box-shadow: 0px 0px 5px rgba($color-white, 0.7);
+				box-shadow: 0rem 0rem 0.4166rem rgba($color-white, 0.7);
 				opacity: 0.7;
 			}
 
@@ -309,7 +332,7 @@ div#note-view {
 			}
 
 			input {
-				margin-bottom: 0px;
+				margin-bottom: 0rem;
 			}
 		}
 
@@ -320,7 +343,6 @@ div#note-view {
 			align-items: center;
 			margin-bottom: 2rem;
 			font-size: 1.25rem;
-			// text-indent: 1rem;
 
 			textarea {
 				margin-bottom: 2rem;
@@ -334,37 +356,33 @@ div#note-view {
 				button {
 					padding: 1.25rem 2rem;
 					background-color: $color-black;
-					cursor: pointer;
-					text-transform: uppercase;
-					border-radius: 4px;
-					transition: box-shadow 0.15s, opacity 0.085s, background-color 0.15s, border 0.15s, color 0.15s;
 				}
 
 				button#cancel-note-editing-btn {
-					border: 1px solid rgba($color-orange, 0.8);
+					border: 0.083333rem solid rgba($color-orange, 0.8);
 
 					&:hover {
 						color: $color-orange;
-						border: 1px solid rgba($color-orange, 0.5);
-						box-shadow: inset 0px 0px 10px rgba($color-orange, 0.3);
+						border: 0.083333rem solid rgba($color-orange, 0.5);
+						box-shadow: inset 0rem 0rem 0.8333rem rgba($color-orange, 0.3);
 					}
 
 					&:active {
-						box-shadow: inset 0px 0px 10px rgba($color-orange, 1);
+						box-shadow: inset 0rem 0rem 0.8333rem rgba($color-orange, 1);
 					}
 				}
 
 				button#confirm-note-editing-btn {
-					border: 1px solid rgba($color-green, 0.8);
+					border: 0.083333rem solid rgba($color-green, 0.8);
 
 					&:hover {
 						color: $color-orange;
-						border: 1px solid rgba($color-green, 0.5);
-						box-shadow: inset 0px 0px 10px rgba($color-green, 0.3);
+						border: 0.083333rem solid rgba($color-green, 0.5);
+						box-shadow: inset 0rem 0rem 0.8333rem rgba($color-green, 0.3);
 					}
 
 					&:active {
-						box-shadow: inset 0px 0px 10px rgba($color-green, 1);
+						box-shadow: inset 0rem 0rem 0.8333rem rgba($color-green, 1);
 					}
 				}
 			}
@@ -387,15 +405,10 @@ div#note-creation {
 
 
 		button {
-			text-transform: uppercase;
 			padding: 1.25rem 2rem;
-			border: none;
 			color: $color-black;
 			font-weight: bold;
-			border-radius: 4px;
-			border: 1px solid rgba($color-white, 0.095);
-			cursor: pointer;
-			opacity: 0.8;
+			border: 0.083333rem solid rgba($color-white, 0.095);
 			transition: box-shadow 0.15s, opacity 0.085s, background-color 0.15s, border 0.15s, color 0.15s;
 		}
 
@@ -404,13 +417,13 @@ div#note-creation {
 
 			&:hover {
 				color: $color-orange;
-				border: 1px solid rgba($color-orange, 0.5);
-				box-shadow: inset 0px 0px 10px rgba($color-orange, 0.3);
+				border: 0.083333rem solid rgba($color-orange, 0.5);
+				box-shadow: inset 0rem 0rem 0.8333rem rgba($color-orange, 0.3);
 				background-color: $color-black;
 			}
 
 			&:active {
-				box-shadow: inset 0px 0px 10px rgba($color-orange, 1);
+				box-shadow: inset 0rem 0rem 0.8333rem rgba($color-orange, 1);
 			}
 		}
 
@@ -419,13 +432,13 @@ div#note-creation {
 
 			&:hover {
 				color: $color-green;
-				border: 1px solid rgba($color-green, 0.5);
-				box-shadow: inset 0px 0px 10px rgba($color-green, 0.3);
+				border: 0.083333rem solid rgba($color-green, 0.5);
+				box-shadow: inset 0rem 0rem 0.8333rem rgba($color-green, 0.3);
 				background-color: $color-black;
 			}
 
 			&:active {
-				box-shadow: inset 0px 0px 10px rgba($color-green, 1);
+				box-shadow: inset 0rem 0rem 0.8333rem rgba($color-green, 1);
 			}
 		}
 

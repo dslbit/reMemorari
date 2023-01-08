@@ -2,22 +2,22 @@
 
 @media only screen and (min-width: $desktop-min-width) {
 	div#app-main-container {
-		min-width: $desktop-min-width - 100px;
-		max-width: $desktop-min-width + 320px;
+		// min-width: $desktop-min-width - 100px;
+		// max-width: $desktop-min-width + 320px;
 	}
 
 	div#notes-list main#main-content {
-		grid-template-columns: 1fr 1fr 1fr;
+		// grid-template-columns: 1fr 1fr 1fr;
 	}
 
 	div#note-view {
 		header#note-view-header {
-			max-width: $desktop-min-width + 320px;
+			// max-width: $desktop-min-width + 320px;
 		}
 	}
 
 	div#note-creation {
-		max-width: $desktop-min-width - 100px;
+		// max-width: $desktop-min-width - 100px;
 	}
 }
 
@@ -39,8 +39,37 @@
 	}
 
 	div#app-main-container {
+		min-width: $desktop-720p-width - 100px;
+		max-width: $desktop-720p-width;
+	}
+
+	div#notes-list main#main-content {
+		grid-template-columns: 1fr 1fr 1fr;
+	}
+
+	div#note-view {
+		header#note-view-header {
+			max-width: $desktop-720p-width;
+		}
+	}
+
+	div#note-creation {
+		// max-width: $desktop-720p-width - 100px;
+	}
+}
+
+@media only screen and (min-width: 2200px) {
+	html {
+		font-size: 18px;
+	}
+
+	div#app-main-container {
 		min-width: $desktop-1080p-width - 100px;
 		max-width: $desktop-1080p-width;
+	}
+
+	div#notes-list main#main-content {
+		grid-template-columns: 1fr 1fr 1fr 1fr;
 	}
 
 	div#note-view {
@@ -50,13 +79,7 @@
 	}
 
 	div#note-creation {
-		// max-width: $desktop-1080p-width - 100px;
-	}
-}
-
-@media only screen and (min-width: 2200px) {
-	html {
-		font-size: 18px;
+		max-width: $desktop-720p-width - 100px;
 	}
 
 	div#note-creation {

@@ -83,11 +83,8 @@ renderAllNotes(gNotes);
 //
 // View
 // TODO: Only setup global variables again only if pre-redenred items gets cleared
-// TODO: render notes list?
-// TODO: render note view
-// TODO: render note creation
-// TODO: render note editing
 // TODO: move every priece of code in this app that changes the html to this place (View)
+// TODO: buttons and mouse actions labels (on hover effect)
 //
 function renderAllNotes(notes) {
 	// NOTE: Should I render all pre-rendered html here? If I do that I don't need global variables with addEventListeners,
@@ -116,6 +113,7 @@ function renderAllNotes(notes) {
 		const addActionContainer = document.createElement('div');
 		addActionContainer.innerText = '';
 		addActionContainer.setAttribute('id', 'add-action');
+		addActionContainer.classList.add('btn');
 		addActionContainer.onclick = addNoteAction;
 		btnActionsContainer.appendChild(addActionContainer);
 
@@ -123,6 +121,7 @@ function renderAllNotes(notes) {
 		const clearAllNotesActionContainer = document.createElement('div');
 		clearAllNotesActionContainer.innerText = '';
 		clearAllNotesActionContainer.setAttribute('id', 'clear-action');
+		clearAllNotesActionContainer.classList.add('btn');
 		clearAllNotesActionContainer.onclick = clearAllNotesAction;
 		btnActionsContainer.appendChild(clearAllNotesActionContainer);
 
@@ -130,6 +129,7 @@ function renderAllNotes(notes) {
 		const backupActionContainer = document.createElement('div');
 		backupActionContainer.innerText = '';
 		backupActionContainer.setAttribute('id', 'backup-action');
+		backupActionContainer.classList.add('btn');
 		backupActionContainer.onclick = backupNotes;
 		btnActionsContainer.appendChild(backupActionContainer);
 	}
@@ -260,11 +260,18 @@ function fadeInEffect(container) {
 	}, gTimeoutFadeEffectInMs*2);
 }
 
-// NOTE: Click event -> modal box (GENERAL CANCEL)
+// NOTE: Click event -> modal box (GENERAL CANCEL or CLOSE action)
 function modalBoxCancelDefaultBehaviour() {
 	fadeOutEffect(document.getElementById('modal-box-container'));
 	document.body.style = 'overflow: auto;';
 }
+
+// NOTE: Click event -> modal box (dark area / close action)
+document.getElementById('modal-box-container').addEventListener('click', function(event) {
+	if(event.target.id === 'modal-box-container') {
+		modalBoxCancelDefaultBehaviour();
+	}
+});
 
 // NOTE: Click event -> view note
 gMainContentContainer.addEventListener('click', function(event) {
@@ -382,6 +389,7 @@ gNoteViewContainer.addEventListener('click', function(event) {
 		// Cancel note editing
 		const cancelBtn = document.createElement('button');
 		cancelBtn.id = 'cancel-note-editing-btn';
+		cancelBtn.classList.add('btn');
 		cancelBtn.onclick = noteEditingCanceled;
 		cancelBtn.innerText = 'cancel';
 		buttonsContainer.appendChild(cancelBtn);
@@ -389,6 +397,7 @@ gNoteViewContainer.addEventListener('click', function(event) {
 		// Confirm note editing
 		const confirmBtn = document.createElement('button');
 		confirmBtn.id = 'confirm-note-editing-btn';
+		confirmBtn.classList.add('btn');
 		confirmBtn.onclick = noteEditingConfirmed;
 		confirmBtn.innerText = 'confirm';
 		buttonsContainer.appendChild(confirmBtn);
@@ -421,13 +430,15 @@ gNoteViewContainer.addEventListener('click', function(event) {
 		const btnCancel = document.createElement('div');
 		btnCancel.innerText = 'cancel';
 		btnCancel.setAttribute('id', 'modal-box-cancel-btn');
+		btnCancel.classList.add('btn');
 		btnCancel.onclick = modalBoxCancelDefaultBehaviour;
 		buttonsSection.appendChild(btnCancel);
 
 		const btnConfirm = document.createElement('div');
 		btnConfirm.innerText = 'confirm';
-		btnConfirm.onclick = deleteNoteModalBoxConfirmation;
 		btnConfirm.setAttribute('id', 'modal-box-confirm-btn');
+		btnConfirm.classList.add('btn');
+		btnConfirm.onclick = deleteNoteModalBoxConfirmation;
 		buttonsSection.appendChild(btnConfirm);
 
 		fadeInEffect(modalBox);
@@ -569,13 +580,15 @@ function clearAllNotesAction(event) {
 	const btnCancel = document.createElement('div');
 	btnCancel.innerText = 'cancel';
 	btnCancel.setAttribute('id', 'modal-box-cancel-btn');
+	btnCancel.classList.add('btn');
 	btnCancel.onclick = modalBoxCancelDefaultBehaviour;
 	buttonsSection.appendChild(btnCancel);
 
 	const btnConfirm = document.createElement('div');
 	btnConfirm.innerText = 'confirm';
-	btnConfirm.onclick = clearAllNotesModalBoxConfirmation;
 	btnConfirm.setAttribute('id', 'modal-box-confirm-btn');
+	btnConfirm.classList.add('btn');
+	btnConfirm.onclick = clearAllNotesModalBoxConfirmation;
 	buttonsSection.appendChild(btnConfirm);
 
 	fadeInEffect(modalBox);
@@ -583,9 +596,75 @@ function clearAllNotesAction(event) {
 	document.body.style = 'overflow: hidden;';
 }
 
-// NOTE: Click event -> backup notes
+// NOTE: Click event -> export notes
+function modalBoxExportDataAction(event) {
+	// console.log('export data here');
+
+	const dataAsFile = new Blob([JSON.stringify(gNotes)], {type: 'octet-stream'});
+	const hrefURL = URL.createObjectURL(dataAsFile);
+
+	const currentDate = new Date();
+	const link = document.createElement('a');
+	link.href = hrefURL;
+	link.style = 'display: none;';
+	link.download = 'notes_data_exported_' + currentDate.getDate() + '_' + (currentDate.getMonth()+1) + '_' + currentDate.getFullYear() + '.json';
+	document.body.appendChild(link);
+	link.click();
+
+	// TODO: Modal box auto msg (from top to screen center) saying that the data exported (downloaded)
+
+	URL.revokeObjectURL(hrefURL);
+	link.remove();
+}
+
+// NOTE: Click event -> backup notes 
 function backupNotes(event) {
 	// TODO: modal box (import data, export data, save to?[disk, drive, dropbox], close)
+
+	const modalBox = document.getElementById('modal-box-container');
+	if(modalBox === null) {
+		return console.error(`Modal box doesn't exist, WTF?`);
+	}
+	// console.log(modalBox);
+	modalBox.innerHTML = '';
+	
+	const modalBoxSection = document.createElement('div');
+	modalBoxSection.classList.add('modal-box-section');
+	modalBox.appendChild(modalBoxSection);
+
+	const titleSection = document.createElement('div');
+	titleSection.innerText = 'Import or Export/Save your Notes';
+	titleSection.classList.add('modal-box-title-section');
+	modalBoxSection.appendChild(titleSection);
+
+	const buttonsSection = document.createElement('div');
+	buttonsSection.classList.add('modal-box-buttons-section');
+	modalBoxSection.appendChild(buttonsSection);
+
+	const btnImportData = document.createElement('div');
+	btnImportData.id = 'modal-box-import-data-btn';
+	btnImportData.classList.add('btn');
+	// btnImportData.onclick = modalBoxCancelDefaultBehaviour;
+	buttonsSection.appendChild(btnImportData);
+
+	const btnExportData = document.createElement('div');
+	btnExportData.id = 'modal-box-export-data-btn';
+	btnExportData.onclick = modalBoxExportDataAction;
+	btnExportData.classList.add('btn');
+	// btnExportData.onclick = modalBoxCancelDefaultBehaviour;
+	buttonsSection.appendChild(btnExportData);
+
+	const btnClose = document.createElement('div');
+	btnClose.id = 'modal-box-close-btn';
+	btnClose.classList.add('btn');
+	btnClose.onclick = modalBoxCancelDefaultBehaviour;
+	buttonsSection.appendChild(btnClose);
+
+	// const importExportSection = document.createElement('div');
+
+	fadeInEffect(modalBox);
+	window.scrollTo(0, 0);
+	document.body.style = 'overflow: hidden;';
 }
 
 // NOTE: Click event -> cancel new note creation
