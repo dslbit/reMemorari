@@ -32,6 +32,7 @@ function noteCreate(noteId, noteTitle, noteContent, noteCreatedDate) {
 		content: noteContent,
 		createdDate: noteCreatedDate
 	});
+	notesSaveToLocalStorage();
 }
 
 function noteRemove(noteId) {
@@ -42,14 +43,23 @@ function noteRemove(noteId) {
 			return true;
 		}
 	});
+	notesSaveToLocalStorage();
 }
 
 function notesSaveToLocalStorage() {
 	localStorage.setItem(gNotesKey, JSON.stringify(gNotes));
 }
 
+function notesLoad(importedNotes) {
+	if(importedNotes) {
+		gNotes = importedNotes;
+	}
+	notesSaveToLocalStorage();
+}
+
 function notesClear() {
 	gNotes = [];
+	notesSaveToLocalStorage();
 }
 
 function noteEdit(noteId, newNoteData) {
@@ -86,7 +96,7 @@ renderAllNotes(gNotes);
 // TODO: move every priece of code in this app that changes the html to this place (View)
 // TODO: buttons and mouse actions labels (on hover effect)
 //
-function renderAllNotes(notes) {
+function renderAllNotes() {
 	// NOTE: Should I render all pre-rendered html here? If I do that I don't need global variables with addEventListeners,
 	// but on the other hand I would need to pre-render everything here instead of using static html, otherwise things
 	// can get more ugly.
@@ -320,7 +330,6 @@ function deleteNoteModalBoxConfirmation() {
 	const noteViewSectionToRemove = document.getElementById('note-view-section');
 	const noteIdToRemove = noteViewSectionToRemove.dataset.id;
 	noteRemove(noteIdToRemove);
-	notesSaveToLocalStorage();
 
 	fadeOutInEffect(gNoteViewContainer, gNotesListContainer);
 	fadeInEffect(document.getElementById('btn-actions-container'));
@@ -549,9 +558,8 @@ function addNoteAction(event) {
 
 function clearAllNotesModalBoxConfirmation() {
 	notesClear();
-	notesSaveToLocalStorage();
 	fadeOutEffect(document.getElementById('modal-box-container'));
-	renderAllNotes(gNotes);
+	renderAllNotes();
 }
 
 // NOTE: Click event -> clear all notes
@@ -594,6 +602,25 @@ function clearAllNotesAction(event) {
 	fadeInEffect(modalBox);
 	window.scrollTo(0, 0);
 	document.body.style = 'overflow: hidden;';
+}
+
+// @continue
+// NOTE: Click event -> import notes
+function modalBoxImportDataAction(event) {
+	const file = event.target.files[0];
+	const reader = new FileReader();
+
+	if(file !== null) {
+		reader.readAsText(file);
+	}
+
+	reader.addEventListener('load', function() {
+		if(reader.result) {
+			notesLoad(JSON.parse(reader.result));
+			renderAllNotes();
+			modalBoxCancelDefaultBehaviour(); // modal box fade-out effect
+		}
+	});
 }
 
 // NOTE: Click event -> export notes
@@ -641,17 +668,23 @@ function backupNotes(event) {
 	buttonsSection.classList.add('modal-box-buttons-section');
 	modalBoxSection.appendChild(buttonsSection);
 
-	const btnImportData = document.createElement('div');
+	const btnImportData = document.createElement('label');
+	const btnImportDataInput = document.createElement('input');
+	btnImportDataInput.id = 'modal-box-import-data-input-btn';
+	btnImportDataInput.type = 'file';
+	btnImportDataInput.accept = '.json, .txt';
+	btnImportDataInput.multiple = false;
+	btnImportData.for = 'modal-box-import-data-input-btn';
 	btnImportData.id = 'modal-box-import-data-btn';
 	btnImportData.classList.add('btn');
-	// btnImportData.onclick = modalBoxCancelDefaultBehaviour;
+	btnImportData.appendChild(btnImportDataInput);
+	btnImportData.onchange = modalBoxImportDataAction;
 	buttonsSection.appendChild(btnImportData);
 
 	const btnExportData = document.createElement('div');
 	btnExportData.id = 'modal-box-export-data-btn';
 	btnExportData.onclick = modalBoxExportDataAction;
 	btnExportData.classList.add('btn');
-	// btnExportData.onclick = modalBoxCancelDefaultBehaviour;
 	buttonsSection.appendChild(btnExportData);
 
 	const btnClose = document.createElement('div');
@@ -715,7 +748,6 @@ gBtnCreateNote.addEventListener('click', function(event) {
 	}
 	
 	noteCreate(noteId, noteTitleInput.value, notesContent, noteCreatedDateAsStr);
-	notesSaveToLocalStorage();
 
 	// TODO: move this to the view section
 	// render new added note to the notes list

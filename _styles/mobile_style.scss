@@ -114,7 +114,7 @@ div#app-main-container {
 			justify-content: space-around;
 			align-items: center;
 
-			div#modal-box-import-data-btn,
+			label#modal-box-import-data-btn,
 			div#modal-box-export-data-btn,
 			div#modal-box-close-btn {
 				padding: 2rem;
@@ -134,9 +134,14 @@ div#app-main-container {
 				background: url('../_icons/icon_close.png') no-repeat center/50% rgba($color-black, 0.85);
 			}
 
-			div#modal-box-import-data-btn {
+			// NOTE: An interesting way to style file input (wrap it with a label with a for param)
+			label#modal-box-import-data-btn {
 				background: url('../_icons/icon_import.png') no-repeat center/40% rgba($color-black, 0.85);
 				margin-right: 2rem;
+
+				input#modal-box-import-data-input-btn {
+					display: none;
+				}
 			}
 
 			div#modal-box-export-data-btn {
