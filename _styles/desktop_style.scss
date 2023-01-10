@@ -1,9 +1,44 @@
 @import "./global_variables";
 
 @media only screen and (min-width: $desktop-min-width) {
+	div.btn-label {
+		opacity: 0;
+	}
+
 	div#app-main-container {
 		// min-width: $desktop-min-width - 100px;
 		// max-width: $desktop-min-width + 320px;
+
+		div#create-action,
+		div#clear-action,
+		div#backup-action {
+			div.btn-label {
+				opacity: 0;
+			}
+
+			&:hover div.btn-label {
+				text-decoration: none;
+			}
+		}
+
+		div#modal-box-container {
+
+			div.modal-box-buttons-section {
+
+				label#modal-box-import-data-btn,
+				div#modal-box-export-data-btn,
+				div#modal-box-close-btn {
+
+					&:hover {
+						div.btn-label {
+							opacity: 1;
+						}
+					}
+
+				}
+
+			}
+		}
 	}
 
 	div#notes-list main#main-content {
@@ -13,6 +48,16 @@
 	div#note-view {
 		header#note-view-header {
 			// max-width: $desktop-min-width + 320px;
+			div.note-view-go-back-action,
+			div.note-view-edit-action,
+			div.note-view-delete-action {
+				div.btn-label {
+					opacity: 0;
+					padding: 0.5rem 1rem;
+					background-color: $color-black;
+					text-decoration: underline;
+				}
+			}
 		}
 	}
 

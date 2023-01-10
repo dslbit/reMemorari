@@ -1,9 +1,9 @@
-// TODO: buttons and mouse actions labels (on hover effect)
+// TODO: msg of the day: You haven't done a backup of your notes in a while. Do you want to backup your notes now?
 // TODO: note view info: #paragraphs, #lines, #characters, #avg-reading-time
 // TODO: save the current note the user is reading to load in a new session if needed
+// TODO: save note creation state in case of user closing the app before confirmation
 // TODO: split content into paragraphs (using the newline separator or something like that)
-// TODO: modal box auto-closing msg
-// TODO: more backup options on modal box (save to Google Drive/Dropbox/...)
+// TODO: more backup options (Google Drive/Dropbox/...)
 
 import {
 	gTimeoutFadeEffectInMs,
@@ -19,6 +19,12 @@ import {
 let gMainContentContainer = document.getElementById('main-content');
 let gNoteViewContainer = document.getElementById('note-view');
 let gNotesListContainer = document.getElementById('notes-list');
+
+const gModalBoxMessageTypes = {
+	msgInfo: 0,
+	msgSuccess: 1,
+	msgFailure: 2
+};
 
 const gRememorariAppNotesKey = 'rememorariAppNotes';
 let gNotes = []; // fed in preRenderSetup()
@@ -108,7 +114,6 @@ function renderAllNotes() {
 
 	const appMainContainer = document.getElementById('app-main-container');
 
-	// Modal box (cancel, confirm) for actions
 	// If static html for the modal box doesn't exist
 	if(document.getElementById('modal-box-container') === null) {
 		const modalBoxContainer = document.createElement('div');
@@ -118,19 +123,34 @@ function renderAllNotes() {
 		appMainContainer.appendChild(modalBoxContainer);
 	}
 
+	// If static html for the modal box auto-closing message doesn't exist
+	if(document.getElementById('modal-box-msg-container') === null) {
+		const modalBoxMsgContainer = document.createElement('div');
+		modalBoxMsgContainer.setAttribute('id', 'modal-box-msg-container');
+		modalBoxMsgContainer.classList.add('invisible', 'hidden-container');
+		modalBoxMsgContainer.appendChild(document.createElement('div'));
+		appMainContainer.appendChild(modalBoxMsgContainer);
+	}
+
 	// If static html for the buttons action (add, clear-all-notes, backup-notes) doesn't exist
 	if(document.getElementById('btn-actions-container') === null) {
 		const btnActionsContainer = document.createElement('div');
 		btnActionsContainer.setAttribute('id', 'btn-actions-container');
 		appMainContainer.appendChild(btnActionsContainer);
 
-		// Create note action container
-		const addActionContainer = document.createElement('div');
-		addActionContainer.innerText = '';
-		addActionContainer.setAttribute('id', 'add-action');
-		addActionContainer.classList.add('btn');
-		addActionContainer.onclick = renderCreateNewNote; // NOTE: Click event -> add a new note
-		btnActionsContainer.appendChild(addActionContainer);
+		// Create new note action container
+		const createNewNoteActionContainer = document.createElement('div');
+		createNewNoteActionContainer.innerText = '';
+		createNewNoteActionContainer.id = 'create-action';
+		createNewNoteActionContainer.classList.add('btn');
+		createNewNoteActionContainer.onclick = renderCreateNewNote; // NOTE: Click event -> create new note
+		btnActionsContainer.appendChild(createNewNoteActionContainer);
+
+		// Create new note _label_
+		const createNewNoteLabelContainer = document.createElement('div');
+		createNewNoteLabelContainer.innerText = 'create new note';
+		createNewNoteLabelContainer.classList.add('btn-label');
+		createNewNoteActionContainer.appendChild(createNewNoteLabelContainer);
 
 		// Clear all notes action container
 		const clearAllNotesActionContainer = document.createElement('div');
@@ -140,6 +160,12 @@ function renderAllNotes() {
 		clearAllNotesActionContainer.onclick = clearAllNotes;
 		btnActionsContainer.appendChild(clearAllNotesActionContainer);
 
+		// Clear all notes _label_
+		const clearAllNotesLabelContainer = document.createElement('div');
+		clearAllNotesLabelContainer.innerText = 'clear all notes';
+		clearAllNotesLabelContainer.classList.add('btn-label');
+		clearAllNotesActionContainer.appendChild(clearAllNotesLabelContainer);
+
 		// Backup action container
 		const backupActionContainer = document.createElement('div');
 		backupActionContainer.innerText = '';
@@ -147,6 +173,22 @@ function renderAllNotes() {
 		backupActionContainer.classList.add('btn');
 		backupActionContainer.onclick = renderBackupNotes; // NOTE: Click event -> backup notes
 		btnActionsContainer.appendChild(backupActionContainer);
+
+		// Backup notes _label_
+		const backupNotesLabelContainer = document.createElement('div');
+		backupNotesLabelContainer.innerText = 'backup notes';
+		backupNotesLabelContainer.classList.add('btn-label');
+		backupActionContainer.appendChild(backupNotesLabelContainer);
+
+		const authorContainer = document.createElement('div');
+		const authorLink = document.createElement('a');
+		authorLink.innerHTML = 'by <span>douglas lima</span>';
+		authorLink.href = 'https://github.com/dslbit';
+		authorLink.target = '_blank';
+		authorContainer.innerText = '';
+		authorContainer.classList.add('author-label-container');
+		authorContainer.appendChild(authorLink);
+		btnActionsContainer.appendChild(authorContainer);
 	}
 	
 	let noteSection;
@@ -198,7 +240,71 @@ function renderAllNotes() {
 		noteDate.textContent = 'Created: ' + note.createdDate;
 		noteDate.classList.add('note-date');
 		noteSection.appendChild(noteDate);
+
+		
 	});
+
+	// NOTE: Auto-closing test msg
+	/*
+	{
+		const msg = 'Welcome, User!';
+		const timeOnScreenInMs = 2500; // 2.5s
+		renderModalBoxMessage(msg, gModalBoxMessageTypes.msgFailure, timeOnScreenInMs);
+	}
+	*/
+}
+
+function renderModalBoxMessage(msg, msgType, timeOnScreenInMs) {
+	const modalBoxMsg = document.getElementById('modal-box-msg-container');
+	if(modalBoxMsg === null) {
+		return console.error(`Modal box MSG doesn't exist, WTF?`);
+	}
+	modalBoxMsg.innerHTML = '';
+
+	const modalBoxMsgSection = document.createElement('div');
+	modalBoxMsgSection.classList.add('off-screen-x-left', 'modal-box-msg-section');
+	modalBoxMsg.appendChild(modalBoxMsgSection);
+
+	switch(msgType) {
+		case gModalBoxMessageTypes.msgInfo: {
+			modalBoxMsgSection.classList.add('modal-box-msg-info');
+		} break;
+
+		case gModalBoxMessageTypes.msgSuccess: {
+			modalBoxMsgSection.classList.add('modal-box-msg-success');
+		} break;
+
+		case gModalBoxMessageTypes.msgFailure: {
+			modalBoxMsgSection.classList.add('modal-box-msg-failure');
+		} break;
+
+		default: {
+			console.error('Modal Box Message: message type undefined!');
+		}
+	}
+
+	const modalBoxMsgText = document.createElement('p');
+	modalBoxMsgText.innerText = msg;
+	modalBoxMsgSection.appendChild(modalBoxMsgText);
+
+	window.scrollTo(0, 0);
+	modalBoxMsg.classList.remove('hidden-container');
+	document.body.style = 'overflow: hidden;';
+	setTimeout(function() {
+		modalBoxMsg.classList.add('visible');
+		modalBoxMsgSection.classList.add('on-screen-x');
+	}, gTimeoutFadeEffectInMs*2);
+
+	setTimeout(function() {
+		modalBoxMsgSection.classList.remove('on-screen-x');
+		modalBoxMsgSection.classList.add('off-screen-x-right');
+	}, timeOnScreenInMs + 1000);
+
+	setTimeout(function() {
+		modalBoxMsg.classList.remove('visible');
+		document.body.style = 'overflow: auto;';
+		modalBoxMsg.classList.add('hidden-container');
+	}, timeOnScreenInMs + 1500);
 }
 
 function renderModalBox(title, cancelText, confirmText, funcClickConfirmationAction) {
@@ -235,6 +341,7 @@ function renderModalBox(title, cancelText, confirmText, funcClickConfirmationAct
 	btnConfirm.onclick = funcClickConfirmationAction;
 	buttonsSection.appendChild(btnConfirm);
 
+	document.body.style = 'overflow: hidden;';
 	renderFadeInEffect(modalBox);
 	window.scrollTo(0, 0);
 	/*window.scrollTo({
@@ -243,7 +350,6 @@ function renderModalBox(title, cancelText, confirmText, funcClickConfirmationAct
 		behavior: 'smooth',
 	});
 	*/
-	// document.body.style = 'overflow: hidden;';
 }
 
 // NOTE: Click event -> modal box (GENERAL CANCEL or CLOSE action)
@@ -525,17 +631,35 @@ function renderBackupNotes(event) {
 	btnImportData.onchange = modalBoxImportDataAction;
 	buttonsSection.appendChild(btnImportData);
 
+	// Import notes _label_
+	const importNotesLabelContainer = document.createElement('div');
+	importNotesLabelContainer.innerText = 'upload';
+	importNotesLabelContainer.classList.add('btn-label');
+	btnImportData.appendChild(importNotesLabelContainer);
+
 	const btnExportData = document.createElement('div');
 	btnExportData.id = 'modal-box-export-data-btn';
 	btnExportData.onclick = modalBoxExportDataAction;
 	btnExportData.classList.add('btn');
 	buttonsSection.appendChild(btnExportData);
 
+	// Import notes _label_
+	const exportNotesLabelContainer = document.createElement('div');
+	exportNotesLabelContainer.innerText = 'download';
+	exportNotesLabelContainer.classList.add('btn-label');
+	btnExportData.appendChild(exportNotesLabelContainer);
+
 	const btnClose = document.createElement('div');
 	btnClose.id = 'modal-box-close-btn';
 	btnClose.classList.add('btn');
 	btnClose.onclick = renderModalBoxCancelAction;
 	buttonsSection.appendChild(btnClose);
+
+	// Import notes _label_
+	const closeLabelContainer = document.createElement('div');
+	closeLabelContainer.innerText = 'close';
+	closeLabelContainer.classList.add('btn-label');
+	btnClose.appendChild(closeLabelContainer);
 
 	renderFadeInEffect(modalBox);
 	window.scrollTo(0, 0);
@@ -592,13 +716,23 @@ document.querySelector('.create-btn').addEventListener('click', function(event) 
 	const noteTitleInput = document.getElementById('note-creation-title-input');
 	{
 		if(noteTitleInput.value.length < 2) {
-			// TODO: modal box auto-closing msg: 'The note title must be greater than 2.'
+			// NOTE: Auto-closing msg
+			{
+				const msg = 'The note title must be at least 2 characters long.';
+				const timeOnScreenInMs = 2000;
+				renderModalBoxMessage(msg, gModalBoxMessageTypes.msgFailure, timeOnScreenInMs);
+			}
 			return;
 		}
 
 		for(let i = 0; i < gNotes.length; ++i) {
 			if(gNotes[i].title === noteTitleInput.value) {
-				// TODO: modal box auto-closing msg: 'Note title already exist. Please, try again choosing another title.'
+				// NOTE: Auto-closing msg
+				{
+					const msg = 'Note title already exist. Please, try again choosing another title.';
+					const timeOnScreenInMs = 2000;
+					renderModalBoxMessage(msg, gModalBoxMessageTypes.msgFailure, timeOnScreenInMs);
+				}
 				return;
 			}
 		}
@@ -719,6 +853,12 @@ function modalBoxImportDataAction(event) {
 			notesLoad(JSON.parse(reader.result));
 			renderAllNotes();
 			renderModalBoxCancelAction(); // modal box fade-out effect
+			// NOTE: Auto-closing msg
+			{
+				const msg = 'Your notes has been uploaded and updated!';
+				const timeOnScreenInMs = 1500;
+				renderModalBoxMessage(msg, gModalBoxMessageTypes.msgSuccess, timeOnScreenInMs);
+			}
 			console.debug('Click event -> Import notes | File data has been read');
 		}
 	});
@@ -737,7 +877,12 @@ function modalBoxExportDataAction(event) {
 	document.body.appendChild(link);
 	link.click();
 
-	// TODO: Modal box auto-closing msg (from top to screen center) saying that the data exported (downloaded)
+	// NOTE: Auto-closing msg
+	{
+		const msg = 'Your notes has been downloaded to your device!';
+		const timeOnScreenInMs = 5000;
+		renderModalBoxMessage(msg, gModalBoxMessageTypes.msgSuccess, timeOnScreenInMs);
+	}
 
 	URL.revokeObjectURL(hrefURL);
 	link.remove();

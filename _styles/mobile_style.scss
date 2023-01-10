@@ -1,5 +1,6 @@
 //
-// TODO: hover text labels on buttons
+// 0.083333rem = 1px (for borders)
+// 0.333rem = 4px (for border-radius)
 //
 
 @import "./resets";
@@ -25,6 +26,25 @@ body {
 .visible {
 	opacity: 1;
 	transition: opacity 0.1s;
+}
+
+.off-screen-x-left {
+	top: 50%;
+	left: 50%;
+	transform: translate(-1000%, -50%);
+	transition: opacity 1s, transform 2s;
+}
+
+.off-screen-x-right {
+	top: 50%;
+	left: 50%;
+	transform: translate(1000%, -50%);
+	transition: opacity 1s, transform 2s;
+}
+
+.on-screen-x {
+	transform: translate(-50%, -50%);
+	transition: opacity 1s, transform 0.35s;
 }
 
 button,
@@ -60,6 +80,31 @@ textarea {
 textarea {
 	min-height: 55vh;
 	resize: none;
+}
+
+div.btn-label {
+	position: absolute;
+	// width: 10rem;
+	height: 2.25rem;
+	display: flex;
+	align-items: center;
+	padding: 0.25rem;
+	left: 50%;
+	bottom: 50%;
+	transform: translate(-50%, -150%);
+	text-transform: uppercase;
+	font-size: 0.75rem;
+	white-space: nowrap;
+	border-radius: 0.333rem;
+	border-bottom: 0.083333rem solid rgba($color-white, 0.5);
+	opacity: 0.2;
+	transition: opacity 0.15s;
+
+	&:hover,
+	&:active {
+		opacity: 1;
+		text-decoration: underline;
+	}
 }
 
 div#app-main-container {
@@ -105,7 +150,7 @@ div#app-main-container {
 
 		div.modal-box-title-section {
 			text-align: center;
-			margin-bottom: 2rem;
+			margin-bottom: 2.5rem;
 			font-weight: bold;
 		}
 
@@ -113,10 +158,14 @@ div#app-main-container {
 			display: flex;
 			justify-content: space-around;
 			align-items: center;
+			// width: 15rem;
 
 			label#modal-box-import-data-btn,
 			div#modal-box-export-data-btn,
 			div#modal-box-close-btn {
+				position: relative;
+				width: 2rem;
+				height: 2rem;
 				padding: 2rem;
 				border: 0.083333rem solid rgba($color-white, 0.5);
 				border-radius: 50%;
@@ -128,6 +177,14 @@ div#app-main-container {
 				&:active {
 					box-shadow: inset 0rem 0rem 0.833rem rgba($color-white, 0.6);
 				}
+
+				div.btn-label {
+					transform: translate(-50%, -115%);
+				}
+
+				&:hover div.btn-label {
+					opacity: 1;
+				}
 			}
 
 			div#modal-box-close-btn {
@@ -136,6 +193,8 @@ div#app-main-container {
 
 			// NOTE: An interesting way to style file input (wrap it with a label with a for param)
 			label#modal-box-import-data-btn {
+				width: 2rem;
+				height: 2rem;
 				background: url('../_icons/icon_import.png') no-repeat center/40% rgba($color-black, 0.85);
 				margin-right: 2rem;
 
@@ -175,7 +234,44 @@ div#app-main-container {
 
 	}
 
-	div#add-action,
+	div#modal-box-msg-container {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		width: 100vw;
+		height: 100vh;
+		background-color: rgba($color-black, 0.85);
+		z-index: 1000;
+		user-select: none;
+
+		div.modal-box-msg-section {
+			position: absolute;
+			min-width: 10rem;
+			max-width: 75vw;
+			min-height: 5rem;
+			max-height: 50vh;
+			padding: 2rem;
+			background-color: rgba($color-black, 1);
+			border-radius: 0.333rem;
+		}
+	}
+
+	div.modal-box-msg-info {
+		box-shadow: 0rem 0rem 2.833rem rgba($color-white, 0.5);
+		border: 0.183333rem dashed rgba($color-white, 1);
+	}
+
+	div.modal-box-msg-success {
+		box-shadow: 0rem 0rem 2.833rem rgba($color-green, 0.5);
+		border: 0.183333rem dashed rgba($color-green, 1);
+	}
+
+	div.modal-box-msg-failure {
+		box-shadow: 0rem 0rem 2.833rem rgba($color-red, 0.5);
+		border: 0.183333rem dashed rgba($color-red, 1);
+	}
+
+	div#create-action,
 	div#clear-action,
 	div#backup-action {
 		position: fixed;
@@ -199,20 +295,65 @@ div#app-main-container {
 		&:active {
 			box-shadow: 0rem 0rem 2.5rem rgba($color-white, 1);
 		}
+
+		div.btn-label {
+			// color: $color-red;
+			opacity: 0.7;
+			background-color: $color-black;
+			font-weight: bold;
+			padding: 0.50rem 0.3rem;
+		}
+
+		&:hover div.btn-label {
+			opacity: 1;
+			text-decoration: underline;
+		}
 	}
 
-	div#add-action {
-		bottom: 13rem;
+	div.author-label-container {
+		position: fixed;
+		bottom: 0.05rem;
+		right: 0rem;
+		text-align: center;
+		opacity: 0.8;
+		transition: opacity 0.15s;
+		border-radius: 0.333rem;
+		background-color: $color-black;
+		padding: 0.5rem 1rem;
+
+		&:hover,
+		&:active {
+			opacity: 1;
+		}
+
+		a {
+			// padding: 0.8rem 0rem 0.8rem 0.9rem;
+		}
+
+		a,
+		span {
+			text-decoration: none;
+			text-transform: uppercase;
+			font-size: 0.7rem;
+
+			span {
+				text-decoration: underline;
+			}
+		}
+	}
+
+	div#create-action {
+		bottom: 19.5rem;
 		background: url('../_icons/icon_plus.png') no-repeat center/50% rgba($color-black, 0.85);
 	}
 
 	div#clear-action {
-		bottom: 7rem;
+		bottom: 11.0rem;
 		background: url('../_icons/icon_clear.png') no-repeat center/50% rgba($color-black, 0.85);
 	}
 
 	div#backup-action {
-		bottom: 1rem;
+		bottom: 2.5rem;
 		background: url('../_icons/icon_cloud.png') no-repeat center/50% rgba($color-black, 0.85);
 	}
 }
@@ -240,7 +381,6 @@ div#notes-list main#main-content {
 		cursor: pointer;
 		user-select: none;
 		transition: opacity 0.25s, box-shadow 0.15s;
-
 
 		&:hover {
 			box-shadow: 0rem 0rem 0.4166rem rgba($color-white, 0.4);
@@ -289,30 +429,55 @@ div#note-view {
 		width: 100%;
 		display: flex;
 		justify-content: space-between;
+		align-items: center;
 		padding: 1rem;
 		user-select: none;
 		background-color: rgba($color-black, 0.95);
 
-		div {
-			display: inline-block;
+		div.note-view-go-back-action,
+		div.note-view-edit-action,
+		div.note-view-delete-action {
+			position: relative;
+			width: 4rem;
+			height: 4rem;
+			padding: 0.65rem;
+			display: flex;
+			justify-content: center;
+			align-items: center;
 			cursor: pointer;
 			z-index: 10;
-			width: 3rem;
-			height: 3rem;
-			padding: 0.65rem;
-			border-radius: 1.5rem;
+			border-radius: 50%;
 			border: 0.083333rem solid rgba($color-white, 0.5);
-			box-shadow: 0rem 0rem 0.4166rem rgba($color-white, 0.05);
+			box-shadow: 0rem 0rem 1.4166rem rgba($color-white, 0.05);
 			transition: opacity 0.25s, box-shadow 0.15s;
 
-			&:hover {
-				box-shadow: 0rem 0rem 0.4166rem rgba($color-white, 0.7);
-				opacity: 0.7;
+			& img {
+				width: 2rem;
+				height: 2rem;
 			}
 
+			&:hover {
+				box-shadow: 0rem 0rem 1.4166rem rgba($color-white, 0.7);
+			}
+
+			&:hover,
 			&:active {
+				div.btn-label {
+					opacity: 1;
+				}
+			}
+
+			& div.btn-label {
+				bottom: 50%;
+				left: 50%;
+				transform: translate(-50%, 220%);
 				opacity: 0.5;
 			}
+		}
+
+		div.btn-label {
+			bottom: 0rem;
+			left: 0rem;
 		}
 
 		// Go Back img indicator 
@@ -322,7 +487,7 @@ div#note-view {
 	}
 
 	section#note-view-section {
-		padding: 5rem 1rem 0rem;
+		padding: 8.5rem 1rem 0rem;
 		
 		div.note-view-title {
 			margin-bottom: 2rem;
