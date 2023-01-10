@@ -365,7 +365,7 @@ function renderCreateNewNote(event) {
 	
 	renderFadeOutInEffect(gNotesListContainer, noteCreationContainer);
 	renderFadeOutEffect(document.getElementById('btn-actions-container'));
-	console.debug('Click event -> Create new note');
+	// console.debug('Click event -> Create new note');
 }
 
 function renderNewNoteToNotesList(note) {
@@ -558,7 +558,7 @@ function renderEditNoteConfirmAction() {
 		noteSectionToChange.appendChild(newNoteDate);
 	}
 
-	console.debug('Click event -> Edit note confirmation | id: ' + noteId);
+	// console.debug('Click event -> Edit note confirmation | id: ' + noteId);
 }
 
 function renderDeleteNote() {
@@ -583,7 +583,7 @@ function renderDeleteNote() {
 	renderFadeOutEffect(document.getElementById('modal-box-container'));
 	document.body.style = 'overflow: auto;';
 
-	console.debug('Click event -> Delete note confirmation | id: ' + noteIdToRemove);
+	// console.debug('Click event -> Delete note confirmation | id: ' + noteIdToRemove);
 }
 
 function renderClearAllNotes() {
@@ -591,7 +591,7 @@ function renderClearAllNotes() {
 	renderFadeOutEffect(document.getElementById('modal-box-container'));
 	renderAllNotes();
 
-	console.debug('Click event -> Delete all notes confirmation');
+	// console.debug('Click event -> Delete all notes confirmation');
 }
 
 //
@@ -665,7 +665,7 @@ function renderBackupNotes(event) {
 	window.scrollTo(0, 0);
 	document.body.style = 'overflow: hidden;';
 
-	console.debug('Click event -> Backup notes');
+	// console.debug('Click event -> Backup notes');
 }
 
 
@@ -679,9 +679,9 @@ function preRenderSetup() {
 		const notesAppByDSLDataInLocalStorage = JSON.parse(localStorage.getItem(gRememorariAppNotesKey));
 		if(notesAppByDSLDataInLocalStorage !== null) {
 			gNotes = notesAppByDSLDataInLocalStorage;
-			console.debug('reMemorari App: notes, data key: ' + gRememorariAppNotesKey + '\nloaded: ' + gNotes.length + ' objects');
+			// console.debug('reMemorari App: notes, data key: ' + gRememorariAppNotesKey + '\nloaded: ' + gNotes.length + ' objects');
 		} else {
-			console.debug('reMemorari App: no local data stored (yet).');
+			// console.debug('reMemorari App: no local data stored (yet).');
 		}
 	}
 
@@ -760,7 +760,7 @@ document.querySelector('.create-btn').addEventListener('click', function(event) 
 	const note = noteGetById(noteId);
 	renderNewNoteToNotesList(note);
 
-	console.debug('Click event -> Create new note confirmation | id: ' + note.id);
+	// console.debug('Click event -> Create new note confirmation | id: ' + note.id);
 });
 
 //
@@ -779,7 +779,7 @@ gMainContentContainer.addEventListener('click', function(event) {
 		for(let i = 0; i < gNotes.length; ++i) {
 			if(event.target.dataset.id === gNotes[i].id) {
 				renderNoteView(gNotes[i]);
-				console.debug('Click event -> View note | id: ' + gNotes[i].id);
+				// console.debug('Click event -> View note | id: ' + gNotes[i].id);
 				break;
 			}
 		}
@@ -803,7 +803,7 @@ gNoteViewContainer.addEventListener('click', function(event) {
 			noteViewSectionToRemove.remove();
 		}, gTimeoutFadeEffectInMs*3);
 
-		console.debug('Click event -> Go back to notes list');
+		// console.debug('Click event -> Go back to notes list');
 	}
 
 	//
@@ -813,7 +813,7 @@ gNoteViewContainer.addEventListener('click', function(event) {
 		const noteId = document.getElementById('note-view-section').dataset.id;
 		let note = noteGetById(noteId);
 		renderEditNote(note);
-		console.debug('Click event -> Edit note | id: ' + noteId);
+		// console.debug('Click event -> Edit note | id: ' + noteId);
 	}
 
 	//
@@ -824,7 +824,7 @@ gNoteViewContainer.addEventListener('click', function(event) {
 		const cancelActionText = 'cancel';
 		const confirmActionText = 'delete';
 		renderModalBox(modalBoxTitle, cancelActionText, confirmActionText, renderDeleteNote);
-		console.debug('Click event -> Delete note | id: ' + document.getElementById('note-view-section').dataset.id);
+		// console.debug('Click event -> Delete note | id: ' + document.getElementById('note-view-section').dataset.id);
 	}
 });
 
@@ -836,7 +836,7 @@ function clearAllNotes(event) {
 	const cancelActionText = 'cancel';
 	const confirmActionText = 'delete all';
 	renderModalBox(modalBoxTitle, cancelActionText, confirmActionText, renderClearAllNotes);
-	console.debug('Click event -> Clear all notes');
+	// console.debug('Click event -> Clear all notes');
 }
 
 // NOTE: Click event -> import notes
@@ -859,7 +859,7 @@ function modalBoxImportDataAction(event) {
 				const timeOnScreenInMs = 1500;
 				renderModalBoxMessage(msg, gModalBoxMessageTypes.msgSuccess, timeOnScreenInMs);
 			}
-			console.debug('Click event -> Import notes | File data has been read');
+			// console.debug('Click event -> Import notes | File data has been read');
 		}
 	});
 }
@@ -887,7 +887,7 @@ function modalBoxExportDataAction(event) {
 	URL.revokeObjectURL(hrefURL);
 	link.remove();
 
-	console.debug('Click event -> Export notes | Downloading note\'s data as a .json file');
+	// console.debug('Click event -> Export notes | Downloading note\'s data as a .json file');
 }
 
 
