@@ -6,5 +6,4 @@
 * Vanilla JS using Local Storage
 * Upload / Download notes
 
-
 ![](https://github.com/dslbit/reMemorari/blob/main/demo_v1.gif)

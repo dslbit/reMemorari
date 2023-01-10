@@ -159,6 +159,8 @@ div#app-main-container {
 			justify-content: space-around;
 			align-items: center;
 			// width: 15rem;
+			white-space: nowrap;
+			text-align: center;
 
 			label#modal-box-import-data-btn,
 			div#modal-box-export-data-btn,
@@ -179,6 +181,7 @@ div#app-main-container {
 				}
 
 				div.btn-label {
+					opacity: 0.7;
 					transform: translate(-50%, -115%);
 				}
 
@@ -253,6 +256,7 @@ div#app-main-container {
 			padding: 2rem;
 			background-color: rgba($color-black, 1);
 			border-radius: 0.333rem;
+			text-align: center;
 		}
 	}
 
@@ -471,7 +475,7 @@ div#note-view {
 				bottom: 50%;
 				left: 50%;
 				transform: translate(-50%, 220%);
-				opacity: 0.5;
+				opacity: 0.7;
 			}
 		}
 

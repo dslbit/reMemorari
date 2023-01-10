@@ -159,6 +159,8 @@ div#app-main-container div#modal-box-container div.modal-box-buttons-section {
   display: flex;
   justify-content: space-around;
   align-items: center;
+  white-space: nowrap;
+  text-align: center;
 }
 div#app-main-container div#modal-box-container div.modal-box-buttons-section label#modal-box-import-data-btn,
 div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-export-data-btn,
@@ -183,6 +185,7 @@ div#app-main-container div#modal-box-container div.modal-box-buttons-section div
 div#app-main-container div#modal-box-container div.modal-box-buttons-section label#modal-box-import-data-btn div.btn-label,
 div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-export-data-btn div.btn-label,
 div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-close-btn div.btn-label {
+  opacity: 0.7;
   transform: translate(-50%, -115%);
 }
 div#app-main-container div#modal-box-container div.modal-box-buttons-section label#modal-box-import-data-btn:hover div.btn-label,
@@ -243,6 +246,7 @@ div#app-main-container div#modal-box-msg-container div.modal-box-msg-section {
   padding: 2rem;
   background-color: #1a1417;
   border-radius: 0.333rem;
+  text-align: center;
 }
 div#app-main-container div.modal-box-msg-info {
   box-shadow: 0rem 0rem 2.833rem rgba(217, 203, 174, 0.5);
@@ -443,7 +447,7 @@ div#note-view header#note-view-header div.note-view-delete-action div.btn-label 
   bottom: 50%;
   left: 50%;
   transform: translate(-50%, 220%);
-  opacity: 0.5;
+  opacity: 0.7;
 }
 div#note-view header#note-view-header div.btn-label {
   bottom: 0rem;
