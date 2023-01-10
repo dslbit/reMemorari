@@ -1,0 +1,565 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;700;900&display=swap");
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  font-family: "Nunito", monospace;
+  font-weight: 400;
+  font-size: 12px;
+}
+
+img {
+  width: 100%;
+}
+
+* {
+  color: #d9cbae;
+}
+
+body {
+  background-color: #1a1417;
+}
+
+.hidden-container {
+  display: none;
+}
+
+.invisible {
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.visible {
+  opacity: 1;
+  transition: opacity 0.1s;
+}
+
+.off-screen-x-left {
+  top: 50%;
+  left: 50%;
+  transform: translate(-1000%, -50%);
+  transition: opacity 1s, transform 2s;
+}
+
+.off-screen-x-right {
+  top: 50%;
+  left: 50%;
+  transform: translate(1000%, -50%);
+  transition: opacity 1s, transform 2s;
+}
+
+.on-screen-x {
+  transform: translate(-50%, -50%);
+  transition: opacity 1s, transform 0.35s;
+}
+
+button,
+.btn {
+  padding: 1.25rem 2rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 1rem;
+  border-radius: 0.333rem;
+  transition: box-shadow 0.15s, opacity 0.085s, background-color 0.15s, border 0.15s, color 0.15s;
+}
+
+input,
+textarea {
+  width: 100%;
+  max-width: 100%;
+  min-height: 5rem;
+  padding: 1rem;
+  margin-bottom: 3rem;
+  font-size: 1rem;
+  background-color: #1a1417;
+  box-shadow: inset 0rem 0rem 0.833rem rgba(217, 203, 174, 0.3);
+  border: none;
+  border-radius: 0.333rem;
+  outline: none;
+  transition: box-shadow 0.25s;
+}
+input:focus,
+textarea:focus {
+  box-shadow: inset 0rem 0rem 0.833rem rgba(217, 203, 174, 0.5);
+}
+
+textarea {
+  min-height: 55vh;
+  resize: none;
+}
+
+div.btn-label {
+  position: absolute;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  padding: 0.25rem;
+  left: 50%;
+  bottom: 50%;
+  transform: translate(-50%, -150%);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  border-radius: 0.333rem;
+  border-bottom: 0.083333rem solid rgba(217, 203, 174, 0.5);
+  opacity: 0.2;
+  transition: opacity 0.15s;
+}
+div.btn-label:hover, div.btn-label:active {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+div#app-main-container {
+  width: 100%;
+  min-width: 265px;
+  max-width: 499px;
+  min-height: 100vh;
+  margin: 0rem auto;
+  background-color: #1a1417;
+}
+div#app-main-container div#modal-box-container {
+  position: absolute;
+  min-width: 100%;
+  min-height: 100%;
+  top: 0rem;
+  left: 0rem;
+  z-index: 1000;
+  user-select: none;
+  background-color: rgba(26, 20, 23, 0.85);
+  transition: opacity 0.15s;
+}
+div#app-main-container div#modal-box-container div.modal-box-section {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 10rem;
+  min-height: 5rem;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  border-radius: 0.333rem;
+  background-color: #1a1417;
+  box-shadow: 0rem 0rem 0.666rem rgba(217, 203, 174, 0.3);
+  transition: box-shadow 0.15s;
+}
+div#app-main-container div#modal-box-container div.modal-box-section:hover {
+  box-shadow: 0rem 0rem 1.25rem rgba(217, 203, 174, 0.5);
+}
+div#app-main-container div#modal-box-container div.modal-box-title-section {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  font-weight: bold;
+}
+div#app-main-container div#modal-box-container div.modal-box-buttons-section {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+div#app-main-container div#modal-box-container div.modal-box-buttons-section label#modal-box-import-data-btn,
+div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-export-data-btn,
+div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-close-btn {
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+  padding: 2rem;
+  border: 0.083333rem solid rgba(217, 203, 174, 0.5);
+  border-radius: 50%;
+}
+div#app-main-container div#modal-box-container div.modal-box-buttons-section label#modal-box-import-data-btn:hover,
+div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-export-data-btn:hover,
+div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-close-btn:hover {
+  box-shadow: inset 0rem 0rem 0.833rem rgba(217, 203, 174, 0.3);
+}
+div#app-main-container div#modal-box-container div.modal-box-buttons-section label#modal-box-import-data-btn:active,
+div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-export-data-btn:active,
+div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-close-btn:active {
+  box-shadow: inset 0rem 0rem 0.833rem rgba(217, 203, 174, 0.6);
+}
+div#app-main-container div#modal-box-container div.modal-box-buttons-section label#modal-box-import-data-btn div.btn-label,
+div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-export-data-btn div.btn-label,
+div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-close-btn div.btn-label {
+  transform: translate(-50%, -115%);
+}
+div#app-main-container div#modal-box-container div.modal-box-buttons-section label#modal-box-import-data-btn:hover div.btn-label,
+div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-export-data-btn:hover div.btn-label,
+div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-close-btn:hover div.btn-label {
+  opacity: 1;
+}
+div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-close-btn {
+  background: url("../_icons/icon_close.png") no-repeat center/50% rgba(26, 20, 23, 0.85);
+}
+div#app-main-container div#modal-box-container div.modal-box-buttons-section label#modal-box-import-data-btn {
+  width: 2rem;
+  height: 2rem;
+  background: url("../_icons/icon_import.png") no-repeat center/40% rgba(26, 20, 23, 0.85);
+  margin-right: 2rem;
+}
+div#app-main-container div#modal-box-container div.modal-box-buttons-section label#modal-box-import-data-btn input#modal-box-import-data-input-btn {
+  display: none;
+}
+div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-export-data-btn {
+  background: url("../_icons/icon_export.png") no-repeat center/40% rgba(26, 20, 23, 0.85);
+  margin-right: 2rem;
+}
+div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-cancel-btn {
+  margin-right: 1rem;
+  border: 0.083333rem solid rgba(193, 133, 73, 0.8);
+}
+div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-cancel-btn:hover {
+  color: #c18549;
+  border: 0.083333rem solid #c18549;
+  box-shadow: inset 0rem 0rem 0.833rem rgba(193, 133, 73, 0.3);
+}
+div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-confirm-btn {
+  margin-left: 1rem;
+  border: 0.083333rem solid rgba(141, 179, 94, 0.8);
+}
+div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-confirm-btn:hover {
+  color: #8db35e;
+  border: 0.083333rem solid #8db35e;
+  box-shadow: inset 0rem 0rem 0.833rem rgba(141, 179, 94, 0.3);
+}
+div#app-main-container div#modal-box-msg-container {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(26, 20, 23, 0.85);
+  z-index: 1000;
+  user-select: none;
+}
+div#app-main-container div#modal-box-msg-container div.modal-box-msg-section {
+  position: absolute;
+  min-width: 10rem;
+  max-width: 75vw;
+  min-height: 5rem;
+  max-height: 50vh;
+  padding: 2rem;
+  background-color: #1a1417;
+  border-radius: 0.333rem;
+}
+div#app-main-container div.modal-box-msg-info {
+  box-shadow: 0rem 0rem 2.833rem rgba(217, 203, 174, 0.5);
+  border: 0.183333rem dashed #d9cbae;
+}
+div#app-main-container div.modal-box-msg-success {
+  box-shadow: 0rem 0rem 2.833rem rgba(141, 179, 94, 0.5);
+  border: 0.183333rem dashed #8db35e;
+}
+div#app-main-container div.modal-box-msg-failure {
+  box-shadow: 0rem 0rem 2.833rem rgba(175, 75, 59, 0.5);
+  border: 0.183333rem dashed #af4b3b;
+}
+div#app-main-container div#create-action,
+div#app-main-container div#clear-action,
+div#app-main-container div#backup-action {
+  position: fixed;
+  right: 1.5rem;
+  width: 5rem;
+  height: 5rem;
+  padding: 1.5rem;
+  border-radius: 2.5rem;
+  border: 0.083333rem solid rgba(217, 203, 174, 0.2);
+  box-shadow: rem rem 0.666rem rgba(217, 203, 174, 0.3);
+  cursor: pointer;
+  user-select: none;
+  font-size: 2rem;
+  transition: opacity 0.15s, box-shadow 0.15s;
+  z-index: 100;
+}
+div#app-main-container div#create-action:hover,
+div#app-main-container div#clear-action:hover,
+div#app-main-container div#backup-action:hover {
+  box-shadow: 0rem 0rem 1.25rem rgba(217, 203, 174, 0.8);
+}
+div#app-main-container div#create-action:active,
+div#app-main-container div#clear-action:active,
+div#app-main-container div#backup-action:active {
+  box-shadow: 0rem 0rem 2.5rem #d9cbae;
+}
+div#app-main-container div#create-action div.btn-label,
+div#app-main-container div#clear-action div.btn-label,
+div#app-main-container div#backup-action div.btn-label {
+  opacity: 0.7;
+  background-color: #1a1417;
+  font-weight: bold;
+  padding: 0.5rem 0.3rem;
+}
+div#app-main-container div#create-action:hover div.btn-label,
+div#app-main-container div#clear-action:hover div.btn-label,
+div#app-main-container div#backup-action:hover div.btn-label {
+  opacity: 1;
+  text-decoration: underline;
+}
+div#app-main-container div.author-label-container {
+  position: fixed;
+  bottom: 0.05rem;
+  right: 0rem;
+  text-align: center;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+  border-radius: 0.333rem;
+  background-color: #1a1417;
+  padding: 0.5rem 1rem;
+}
+div#app-main-container div.author-label-container:hover, div#app-main-container div.author-label-container:active {
+  opacity: 1;
+}
+div#app-main-container div.author-label-container a,
+div#app-main-container div.author-label-container span {
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+div#app-main-container div.author-label-container a span,
+div#app-main-container div.author-label-container span span {
+  text-decoration: underline;
+}
+div#app-main-container div#create-action {
+  bottom: 19.5rem;
+  background: url("../_icons/icon_plus.png") no-repeat center/50% rgba(26, 20, 23, 0.85);
+}
+div#app-main-container div#clear-action {
+  bottom: 11rem;
+  background: url("../_icons/icon_clear.png") no-repeat center/50% rgba(26, 20, 23, 0.85);
+}
+div#app-main-container div#backup-action {
+  bottom: 2.5rem;
+  background: url("../_icons/icon_cloud.png") no-repeat center/50% rgba(26, 20, 23, 0.85);
+}
+
+header#main-header {
+  padding: 1rem 0rem;
+  text-align: center;
+  user-select: none;
+}
+
+div#notes-list main#main-content {
+  padding: 1rem 1.5rem 17rem;
+}
+div#notes-list main#main-content section.note {
+  width: 100%;
+  min-height: 9rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  border-radius: 0.333rem;
+  box-shadow: 0rem 0rem 0.4166rem rgba(217, 203, 174, 0.05);
+  background-color: rgba(217, 203, 174, 0.1);
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.25s, box-shadow 0.15s;
+}
+div#notes-list main#main-content section.note:hover {
+  box-shadow: 0rem 0rem 0.4166rem rgba(217, 203, 174, 0.4);
+  opacity: 0.85;
+}
+div#notes-list main#main-content section.note:active {
+  opacity: 0.5;
+}
+div#notes-list main#main-content section.note div.note-title {
+  align-self: start;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+div#notes-list main#main-content section.note div.note-preview {
+  align-self: center;
+  text-align: justify;
+  font-size: 0.9rem;
+  text-indent: 1rem;
+  margin-bottom: 0.5rem;
+}
+div#notes-list main#main-content section.note div.note-date {
+  align-self: end;
+  font-size: 0.85rem;
+}
+div#notes-list main#main-content section.note div.note-title,
+div#notes-list main#main-content section.note div.note-preview,
+div#notes-list main#main-content section.note div.note-date {
+  pointer-events: none;
+}
+
+div#note-view {
+  padding-bottom: 5rem;
+}
+div#note-view header#note-view-header {
+  position: fixed;
+  max-width: 499px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  user-select: none;
+  background-color: rgba(26, 20, 23, 0.95);
+}
+div#note-view header#note-view-header div.note-view-go-back-action,
+div#note-view header#note-view-header div.note-view-edit-action,
+div#note-view header#note-view-header div.note-view-delete-action {
+  position: relative;
+  width: 4rem;
+  height: 4rem;
+  padding: 0.65rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 10;
+  border-radius: 50%;
+  border: 0.083333rem solid rgba(217, 203, 174, 0.5);
+  box-shadow: 0rem 0rem 1.4166rem rgba(217, 203, 174, 0.05);
+  transition: opacity 0.25s, box-shadow 0.15s;
+}
+div#note-view header#note-view-header div.note-view-go-back-action img,
+div#note-view header#note-view-header div.note-view-edit-action img,
+div#note-view header#note-view-header div.note-view-delete-action img {
+  width: 2rem;
+  height: 2rem;
+}
+div#note-view header#note-view-header div.note-view-go-back-action:hover,
+div#note-view header#note-view-header div.note-view-edit-action:hover,
+div#note-view header#note-view-header div.note-view-delete-action:hover {
+  box-shadow: 0rem 0rem 1.4166rem rgba(217, 203, 174, 0.7);
+}
+div#note-view header#note-view-header div.note-view-go-back-action:hover div.btn-label, div#note-view header#note-view-header div.note-view-go-back-action:active div.btn-label,
+div#note-view header#note-view-header div.note-view-edit-action:hover div.btn-label,
+div#note-view header#note-view-header div.note-view-edit-action:active div.btn-label,
+div#note-view header#note-view-header div.note-view-delete-action:hover div.btn-label,
+div#note-view header#note-view-header div.note-view-delete-action:active div.btn-label {
+  opacity: 1;
+}
+div#note-view header#note-view-header div.note-view-go-back-action div.btn-label,
+div#note-view header#note-view-header div.note-view-edit-action div.btn-label,
+div#note-view header#note-view-header div.note-view-delete-action div.btn-label {
+  bottom: 50%;
+  left: 50%;
+  transform: translate(-50%, 220%);
+  opacity: 0.5;
+}
+div#note-view header#note-view-header div.btn-label {
+  bottom: 0rem;
+  left: 0rem;
+}
+div#note-view header#note-view-header div img {
+  pointer-events: none;
+}
+div#note-view section#note-view-section {
+  padding: 8.5rem 1rem 0rem;
+}
+div#note-view section#note-view-section div.note-view-title {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+div#note-view section#note-view-section div.note-view-title h2 {
+  text-transform: uppercase;
+  font-size: 2rem;
+  text-indent: justify-content;
+}
+div#note-view section#note-view-section div.note-view-title input {
+  margin-bottom: 0rem;
+}
+div#note-view section#note-view-section div.note-view-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+  font-size: 1.25rem;
+}
+div#note-view section#note-view-section div.note-view-content textarea {
+  margin-bottom: 2rem;
+}
+div#note-view section#note-view-section div.note-view-content div.note-editing-buttons-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+div#note-view section#note-view-section div.note-view-content div.note-editing-buttons-container button {
+  padding: 1.25rem 2rem;
+  background-color: #1a1417;
+}
+div#note-view section#note-view-section div.note-view-content div.note-editing-buttons-container button#cancel-note-editing-btn {
+  border: 0.083333rem solid rgba(193, 133, 73, 0.8);
+}
+div#note-view section#note-view-section div.note-view-content div.note-editing-buttons-container button#cancel-note-editing-btn:hover {
+  color: #c18549;
+  border: 0.083333rem solid rgba(193, 133, 73, 0.5);
+  box-shadow: inset 0rem 0rem 0.8333rem rgba(193, 133, 73, 0.3);
+}
+div#note-view section#note-view-section div.note-view-content div.note-editing-buttons-container button#cancel-note-editing-btn:active {
+  box-shadow: inset 0rem 0rem 0.8333rem #c18549;
+}
+div#note-view section#note-view-section div.note-view-content div.note-editing-buttons-container button#confirm-note-editing-btn {
+  border: 0.083333rem solid rgba(141, 179, 94, 0.8);
+}
+div#note-view section#note-view-section div.note-view-content div.note-editing-buttons-container button#confirm-note-editing-btn:hover {
+  color: #c18549;
+  border: 0.083333rem solid rgba(141, 179, 94, 0.5);
+  box-shadow: inset 0rem 0rem 0.8333rem rgba(141, 179, 94, 0.3);
+}
+div#note-view section#note-view-section div.note-view-content div.note-editing-buttons-container button#confirm-note-editing-btn:active {
+  box-shadow: inset 0rem 0rem 0.8333rem #8db35e;
+}
+div#note-view section#note-view-section div.note-date-created {
+  font-size: 0.85rem;
+}
+
+div#note-creation {
+  padding: 1rem;
+  user-select: none;
+}
+div#note-creation div.confirmation-buttons {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+div#note-creation div.confirmation-buttons button {
+  padding: 1.25rem 2rem;
+  color: #1a1417;
+  font-weight: bold;
+  border: 0.083333rem solid rgba(217, 203, 174, 0.095);
+  transition: box-shadow 0.15s, opacity 0.085s, background-color 0.15s, border 0.15s, color 0.15s;
+}
+div#note-creation div.confirmation-buttons div.cancel-btn button {
+  background-color: #c18549;
+}
+div#note-creation div.confirmation-buttons div.cancel-btn button:hover {
+  color: #c18549;
+  border: 0.083333rem solid rgba(193, 133, 73, 0.5);
+  box-shadow: inset 0rem 0rem 0.8333rem rgba(193, 133, 73, 0.3);
+  background-color: #1a1417;
+}
+div#note-creation div.confirmation-buttons div.cancel-btn button:active {
+  box-shadow: inset 0rem 0rem 0.8333rem #c18549;
+}
+div#note-creation div.confirmation-buttons div.create-btn button {
+  background-color: #8db35e;
+}
+div#note-creation div.confirmation-buttons div.create-btn button:hover {
+  color: #8db35e;
+  border: 0.083333rem solid rgba(141, 179, 94, 0.5);
+  box-shadow: inset 0rem 0rem 0.8333rem rgba(141, 179, 94, 0.3);
+  background-color: #1a1417;
+}
+div#note-creation div.confirmation-buttons div.create-btn button:active {
+  box-shadow: inset 0rem 0rem 0.8333rem #8db35e;
+}
+div#note-creation div.confirmation-buttons button:hover {
+  opacity: 0.8;
+}
+div#note-creation div.confirmation-buttons button:active {
+  opacity: 0.2;
+}
+
+/*# sourceMappingURL=mobile_style.css.map */
