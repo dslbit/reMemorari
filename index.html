@@ -5,11 +5,11 @@
 		<meta http-equiv="x-ua-compatible" content="ie=edge" />
 
 		<meta name="author" content="Douglas Lima" />
-		<meta name="description" content="Organize your notes and remember them using an easy and smart way." />
-		<meta name="keywords" content="annotations, notes, todo list, remember notes, notes forgetting curve" />
+		<meta name="description" content="Create, save, edit and import/export your notes." />
+		<meta name="keywords" content="annotations, notes, todo list, remember notes" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-		<title>Annotations</title>
+		<title>Notes - reMemorari</title>
 		<link rel="icon" type="image/x-icon" href="_icons/icon_favicon.png" />
 		<link rel="stylesheet" href="_styles/mobile_style.css" />
 		<link rel="stylesheet" href="_styles/tablet_style.css" />
@@ -38,11 +38,11 @@
 
 			<div id="note-creation" class="hidden-container invisible">
 				<div class="note-creation-title-container">
-					<input id="note-creation-title-input" type="text" name="note-title" placeholder="Note's title" minlength="3" maxlength="15" />
+					<input id="note-creation-title-input" type="text" name="note-title" placeholder="Note's title" minlength="3" maxlength="15" autocomplete="off" />
 				</div>
 
 				<div class="note-creation-content-container">
-					<textarea id="note-creation-content-input" type="text" name="note-content" placeholder="..." spellcheck="false" wrap="soft"></textarea>
+					<textarea id="note-creation-content-input" type="text" name="note-content" placeholder="..." spellcheck="false" wrap="soft" autocomplete="off"></textarea>
 				</div>
 
 				<div class="confirmation-buttons">
@@ -59,6 +59,6 @@
 			</div>
 
 		</div> <!-- Main App Container -->
-		<script defer src="_scripts/app.js"></script>
+		<script type="module" defer src="_scripts/app.js"></script>
 	</body>
 </html>

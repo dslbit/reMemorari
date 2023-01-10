@@ -1,29 +1,38 @@
+// TODO: buttons and mouse actions labels (on hover effect)
+// TODO: note view info: #paragraphs, #lines, #characters, #avg-reading-time
+// TODO: save the current note the user is reading to load in a new session if needed
+// TODO: split content into paragraphs (using the newline separator or something like that)
+// TODO: modal box auto-closing msg
+// TODO: more backup options on modal box (save to Google Drive/Dropbox/...)
+
+import {
+	gTimeoutFadeEffectInMs,
+	renderFadeOutInEffect,
+	renderFadeOutEffect,
+	renderFadeInEffect
+} from './fadein_fadeout_effects.js';
+
 //
 // Model
 //
 
+let gMainContentContainer = document.getElementById('main-content');
+let gNoteViewContainer = document.getElementById('note-view');
+let gNotesListContainer = document.getElementById('notes-list');
 
-// TODO: save the current note the user is reading to load in a new session if needed
-// TODO: split content into paragraphs (using the newline separator or something like that)
-const gNotesKey = 'notesAppByDSLDataInLocalStorage';
-let gNotes = []; // feed in preRenderSetup()
-/*let gNotes = [
+const gRememorariAppNotesKey = 'rememorariAppNotes';
+let gNotes = []; // fed in preRenderSetup()
+/*
+let gNotes = [
   {
   	id: 'id-01',
   	title: 'Lorem Ipsum 1',
   	content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit,\
-  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\
-  	Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-  	nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in\
-  	reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla\
-  	pariatur. Excepteur sint occaecat cupidatat non proident, sunt in\
-  	culpa qui officia deserunt mollit anim id est laborum.',
+  	sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
   	createdDate: '00/00/0000'
   },
 ];
 */
-
-const gTimeoutFadeEffectInMs = 90;
 
 function noteCreate(noteId, noteTitle, noteContent, noteCreatedDate) {
 	gNotes.unshift({
@@ -47,7 +56,7 @@ function noteRemove(noteId) {
 }
 
 function notesSaveToLocalStorage() {
-	localStorage.setItem(gNotesKey, JSON.stringify(gNotes));
+	localStorage.setItem(gRememorariAppNotesKey, JSON.stringify(gNotes));
 }
 
 function notesLoad(importedNotes) {
@@ -59,13 +68,12 @@ function notesLoad(importedNotes) {
 
 function notesClear() {
 	gNotes = [];
-	notesSaveToLocalStorage();
+	localStorage.clear(gRememorariAppNotesKey);
 }
 
 function noteEdit(noteId, newNoteData) {
 	for(let i = 0; i < gNotes.length; ++i) {
 		if(gNotes[i].id === noteId) {
-			// edit data and save
 			gNotes[i] = newNoteData;
 			notesSaveToLocalStorage();
 			break;
@@ -90,16 +98,13 @@ function noteGetById(noteId) {
 preRenderSetup();
 renderAllNotes(gNotes);
 
+
+
 //
 // View
-// TODO: Only setup global variables again only if pre-redenred items gets cleared
-// TODO: move every priece of code in this app that changes the html to this place (View)
-// TODO: buttons and mouse actions labels (on hover effect)
 //
 function renderAllNotes() {
-	// NOTE: Should I render all pre-rendered html here? If I do that I don't need global variables with addEventListeners,
-	// but on the other hand I would need to pre-render everything here instead of using static html, otherwise things
-	// can get more ugly.
+	// NOTE: I'm using as much as I can from the static html code for readibilitty, because reading html text in a js file is horrible.
 
 	const appMainContainer = document.getElementById('app-main-container');
 
@@ -113,7 +118,7 @@ function renderAllNotes() {
 		appMainContainer.appendChild(modalBoxContainer);
 	}
 
-	// If static html for the buttons action doesn't exist
+	// If static html for the buttons action (add, clear-all-notes, backup-notes) doesn't exist
 	if(document.getElementById('btn-actions-container') === null) {
 		const btnActionsContainer = document.createElement('div');
 		btnActionsContainer.setAttribute('id', 'btn-actions-container');
@@ -124,7 +129,7 @@ function renderAllNotes() {
 		addActionContainer.innerText = '';
 		addActionContainer.setAttribute('id', 'add-action');
 		addActionContainer.classList.add('btn');
-		addActionContainer.onclick = addNoteAction;
+		addActionContainer.onclick = renderCreateNewNote; // NOTE: Click event -> add a new note
 		btnActionsContainer.appendChild(addActionContainer);
 
 		// Clear all notes action container
@@ -132,7 +137,7 @@ function renderAllNotes() {
 		clearAllNotesActionContainer.innerText = '';
 		clearAllNotesActionContainer.setAttribute('id', 'clear-action');
 		clearAllNotesActionContainer.classList.add('btn');
-		clearAllNotesActionContainer.onclick = clearAllNotesAction;
+		clearAllNotesActionContainer.onclick = clearAllNotes;
 		btnActionsContainer.appendChild(clearAllNotesActionContainer);
 
 		// Backup action container
@@ -140,7 +145,7 @@ function renderAllNotes() {
 		backupActionContainer.innerText = '';
 		backupActionContainer.setAttribute('id', 'backup-action');
 		backupActionContainer.classList.add('btn');
-		backupActionContainer.onclick = backupNotes;
+		backupActionContainer.onclick = renderBackupNotes; // NOTE: Click event -> backup notes
 		btnActionsContainer.appendChild(backupActionContainer);
 	}
 	
@@ -159,12 +164,10 @@ function renderAllNotes() {
 	}
 	
 	gNotes.forEach(function(note) {
-		// console.log(note);
 		const noteSection = document.createElement('section');
 		noteSection.classList.add('note');
 		noteSection.dataset.id = note.id;
 		notesContainer.appendChild(noteSection);
-		// noteSection.classList.add('invisible');
 
 		const noteTitle = document.createElement('div');
 		noteTitle.textContent = note.title;
@@ -198,274 +201,178 @@ function renderAllNotes() {
 	});
 }
 
-
-
-//
-// Controller
-//
-let gMainContentContainer = document.getElementById('main-content');
-let gNoteViewContainer = document.getElementById('note-view');
-let gNotesListContainer = document.getElementById('notes-list');
-
-function preRenderSetup() {
-
-	// Checking if there's data to be loaded from local storage
-	{
-		const notesAppByDSLDataInLocalStorage = JSON.parse(localStorage.getItem(gNotesKey));
-		if(notesAppByDSLDataInLocalStorage != null) {
-			gNotes = notesAppByDSLDataInLocalStorage;
-			console.log('data key: ' + gNotesKey + '\nloaded: ' + gNotes.length + ' objetcts');
-		}
+function renderModalBox(title, cancelText, confirmText, funcClickConfirmationAction) {
+	const modalBox = document.getElementById('modal-box-container');
+	if(modalBox === null) {
+		return console.error(`Modal box doesn't exist, WTF?`);
 	}
+	modalBox.innerHTML = '';
+	
+	const modalBoxSection = document.createElement('div');
+	modalBoxSection.classList.add('modal-box-section');
+	modalBox.appendChild(modalBoxSection);
 
-	let noteCreationTitleInput = document.getElementById('note-creation-title-input');
-	// console.log(noteCreationTitleInput.maxLength);
+	const modalBoxTitleSection = document.createElement('div');
+	modalBoxTitleSection.innerText = title;
+	modalBoxTitleSection.classList.add('modal-box-title-section');
+	modalBoxSection.appendChild(modalBoxTitleSection);
+	
+	const buttonsSection = document.createElement('div');
+	buttonsSection.classList.add('modal-box-buttons-section');
+	modalBoxSection.appendChild(buttonsSection);
 
-	let userDeviceWidth = window.innerWidth;
-	if(userDeviceWidth >= 360 && userDeviceWidth < 400) {
-		noteCreationTitleInput.maxLength = 19;
-	} else if(userDeviceWidth >= 400 && userDeviceWidth < 430) {
-		noteCreationTitleInput.maxLength = 22;
-	} else if(userDeviceWidth >= 460 && userDeviceWidth < 500) {
-		noteCreationTitleInput.maxLength = 24;
-	} else if(userDeviceWidth >= 500) {
-		noteCreationTitleInput.maxLength = 26;
-	}
-}
+	const btnCancel = document.createElement('div');
+	btnCancel.innerText = cancelText;
+	btnCancel.setAttribute('id', 'modal-box-cancel-btn');
+	btnCancel.classList.add('btn');
+	btnCancel.onclick = renderModalBoxCancelAction;
+	buttonsSection.appendChild(btnCancel);
 
-// NOTE: Fade-out and fade-in containers on the page
-function fadeOutInEffect(containerToFadeOut, containerToFadeIn) {
-	if(containerToFadeOut === null || containerToFadeIn === null) {
-		return console.error('Container to fade-out is null!');
-	}
+	const btnConfirm = document.createElement('div');
+	btnConfirm.innerText = confirmText;
+	btnConfirm.setAttribute('id', 'modal-box-confirm-btn');
+	btnConfirm.classList.add('btn');
+	btnConfirm.onclick = funcClickConfirmationAction;
+	buttonsSection.appendChild(btnConfirm);
 
-	containerToFadeOut.classList.add('invisible');
-	containerToFadeOut.classList.remove('visible');
-	document.body.style = 'overflow: hidden;';
-	setTimeout(function() {
-		containerToFadeIn.classList.remove('hidden-container');
-		containerToFadeOut.classList.add('hidden-container');
-		document.body.style = 'overflow-y: auto;';
-	}, gTimeoutFadeEffectInMs*2);
-
-	setTimeout(function() {
-		containerToFadeIn.classList.add('visible');
-	}, gTimeoutFadeEffectInMs*3);
-}
-
-// NOTE: Fade-out container
-function fadeOutEffect(container) {
-	container.classList.add('invisible');
-	container.classList.remove('visible');
-	setTimeout(function() {
-		container.classList.add('hidden-container');
-	}, gTimeoutFadeEffectInMs*2);
-}
-
-// NOTE: Fade-in container
-function fadeInEffect(container) {
-	container.classList.remove('hidden-container');
-	setTimeout(function() {
-		container.classList.add('visible');
-	}, gTimeoutFadeEffectInMs*2);
+	renderFadeInEffect(modalBox);
+	window.scrollTo(0, 0);
+	/*window.scrollTo({
+		top: document.body.clientHeight/2.3,
+		left: 0,
+		behavior: 'smooth',
+	});
+	*/
+	// document.body.style = 'overflow: hidden;';
 }
 
 // NOTE: Click event -> modal box (GENERAL CANCEL or CLOSE action)
-function modalBoxCancelDefaultBehaviour() {
-	fadeOutEffect(document.getElementById('modal-box-container'));
+function renderModalBoxCancelAction() {
+	renderFadeOutEffect(document.getElementById('modal-box-container'));
 	document.body.style = 'overflow: auto;';
 }
 
-// NOTE: Click event -> modal box (dark area / close action)
-document.getElementById('modal-box-container').addEventListener('click', function(event) {
-	if(event.target.id === 'modal-box-container') {
-		modalBoxCancelDefaultBehaviour();
-	}
-});
-
-// NOTE: Click event -> view note
-gMainContentContainer.addEventListener('click', function(event) {
-	if(event.target.classList.contains('note')) {
-		// Use the dataset and get the note unique id to identify in the Model section the note data, then
-		//   render it in the 'note-view' container and hide the notes container
-
-		// TODO: move to the view section
-		for(let i = 0; i < gNotes.length; ++i) {
-			if(event.target.dataset.id === gNotes[i].id) {
-				// console.log(event.target);
-				const noteViewSection = document.createElement('section');
-				noteViewSection.setAttribute('id', 'note-view-section');
-				noteViewSection.dataset.id = gNotes[i].id;
-				noteViewSection.classList.add('invisible');
-				gNoteViewContainer.appendChild(noteViewSection);
-
-				const noteViewTitleContainer = document.createElement('div');
-				noteViewTitleContainer.classList.add('note-view-title');
-				const noteViewTitle = document.createElement('h2');
-				noteViewTitle.innerText = gNotes[i].title;
-				noteViewTitleContainer.appendChild(noteViewTitle);
-				noteViewSection.appendChild(noteViewTitleContainer);
-
-				const noteViewContent = document.createElement('div');
-				noteViewContent.innerHTML = gNotes[i].content.replaceAll('\n', '<br>');
-				noteViewContent.classList.add('note-view-content');
-				noteViewSection.appendChild(noteViewContent);
-
-				const noteDate = document.createElement('div');
-				noteDate.innerText = 'Created: ' + gNotes[i].createdDate;
-				noteDate.classList.add('note-date-created');
-				noteViewSection.appendChild(noteDate);
-
-				break;
-			}
-		}
-
-		fadeOutInEffect(gNotesListContainer, gNoteViewContainer);
-		fadeInEffect(document.getElementById('note-view-section'));
-		fadeOutEffect(document.getElementById('btn-actions-container'));
-	}
-});
-
-function deleteNoteModalBoxConfirmation() {
-	const noteViewSectionToRemove = document.getElementById('note-view-section');
-	const noteIdToRemove = noteViewSectionToRemove.dataset.id;
-	noteRemove(noteIdToRemove);
-
-	fadeOutInEffect(gNoteViewContainer, gNotesListContainer);
-	fadeInEffect(document.getElementById('btn-actions-container'));
-
-	setTimeout(function() {
-		noteViewSectionToRemove.remove();
-		for(let i = 0; i < gMainContentContainer.childNodes.length; ++i) {
-			if(gMainContentContainer.childNodes[i].dataset.id === noteIdToRemove) {
-				gMainContentContainer.childNodes[i].remove();
-				break;
-			}
-		}
-	}, gTimeoutFadeEffectInMs*2);
-
-	fadeOutEffect(document.getElementById('modal-box-container'));
-	document.body.style = 'overflow: auto;';
+function renderCreateNewNote(event) {
+	document.getElementById('note-creation-title-input').value = '';
+	document.getElementById('note-creation-content-input').value = '';
+	const noteCreationContainer = document.getElementById('note-creation');
+	
+	renderFadeOutInEffect(gNotesListContainer, noteCreationContainer);
+	renderFadeOutEffect(document.getElementById('btn-actions-container'));
+	console.debug('Click event -> Create new note');
 }
 
-// NOTE: Click event -> go back (from note view to note list)
-// NOTE: Click event -> delete note
-// NOTE: Click event -> edit note
-gNoteViewContainer.addEventListener('click', function(event) {
-	// Go back Action
-	if(event.target.classList.contains('note-view-go-back-action')) {
-		const noteViewSectionToRemove = document.getElementById('note-view-section');
-		fadeOutInEffect(gNoteViewContainer, gNotesListContainer);
-		fadeInEffect(document.getElementById('btn-actions-container'));
+function renderNewNoteToNotesList(note) {
+	const newNoteSection = document.createElement('section');
+	newNoteSection.dataset.id = note.id;
+	newNoteSection.classList.add('note');
 
-		setTimeout(function() {
-			noteViewSectionToRemove.remove();
-		}, gTimeoutFadeEffectInMs*3);
-	}
+	const newNoteTitle = document.createElement('div');
+	newNoteTitle.textContent = note.title;
+	newNoteTitle.classList.add('note-title');
+	newNoteSection.appendChild(newNoteTitle);
+	
+	const newNotePreview = document.createElement('div');
 
-	// Edit note action
-	if(event.target.classList.contains('note-view-edit-action')) {
-		const noteId = document.getElementById('note-view-section').dataset.id;
-		let note = noteGetById(noteId);
-		
-		const noteTitle = document.querySelector('.note-view-title');
-		const noteTitleMaxLength = document.getElementById('note-creation-title-input').maxlength;
-		noteTitle.innerHTML = '';
-		const titleInput = document.createElement('input');
-		titleInput.id = 'note-edit-title-input';
-		titleInput.type = 'text';
-		titleInput.name = 'note-title';
-		titleInput.minlength = 3;
-		titleInput.maxlength = noteTitleMaxLength;
-		titleInput.value = note.title;
-		noteTitle.appendChild(titleInput);
-		
-		const noteContent = document.querySelector('.note-view-content');
-		noteContent.innerHTML = '';
-		const contentTextArea = document.createElement('textarea');
-		contentTextArea.id = 'note-edit-content-input';
-		contentTextArea.type = 'text';
-		contentTextArea.name = 'note-content';
-		contentTextArea.spellcheck = false;
-		contentTextArea.wrap = 'soft';
-		contentTextArea.textContent = note.content;
-		noteContent.appendChild(contentTextArea);
-
-		const buttonsContainer = document.createElement('div');
-		buttonsContainer.classList.add('note-editing-buttons-container');
-		noteContent.appendChild(buttonsContainer);
-
-		// Cancel note editing
-		const cancelBtn = document.createElement('button');
-		cancelBtn.id = 'cancel-note-editing-btn';
-		cancelBtn.classList.add('btn');
-		cancelBtn.onclick = noteEditingCanceled;
-		cancelBtn.innerText = 'cancel';
-		buttonsContainer.appendChild(cancelBtn);
-
-		// Confirm note editing
-		const confirmBtn = document.createElement('button');
-		confirmBtn.id = 'confirm-note-editing-btn';
-		confirmBtn.classList.add('btn');
-		confirmBtn.onclick = noteEditingConfirmed;
-		confirmBtn.innerText = 'confirm';
-		buttonsContainer.appendChild(confirmBtn);
-	}
-
-	// Delete note action
-	if(event.target.classList.contains('note-view-delete-action')) {
-		// TODO: 'Are you sure?' confirmation box
-
-		const modalBox = document.getElementById('modal-box-container');
-		if(modalBox === null) {
-			return console.error(`Modal box doesn't exist, WTF?`);
+	{
+		let endContentStrIndex = 0;
+		let addThreeDots = false;
+		if(note.content.length < 280) {
+			endContentStrIndex = note.content.length;
+		} else {
+			endContentStrIndex = 280;
+			addThreeDots = true;
 		}
-		// console.log(modalBox);
-		modalBox.innerHTML = '';
-		
-		const modalBoxSection = document.createElement('div');
-		modalBoxSection.classList.add('modal-box-section');
-		modalBox.appendChild(modalBoxSection);
-
-		const modalBoxTitleSection = document.createElement('div');
-		modalBoxTitleSection.innerText = 'Are you sure you want to erase this note permanently?';
-		modalBoxTitleSection.classList.add('modal-box-title-section');
-		modalBoxSection.appendChild(modalBoxTitleSection);
-		
-		const buttonsSection = document.createElement('div');
-		buttonsSection.classList.add('modal-box-buttons-section');
-		modalBoxSection.appendChild(buttonsSection);
-
-		const btnCancel = document.createElement('div');
-		btnCancel.innerText = 'cancel';
-		btnCancel.setAttribute('id', 'modal-box-cancel-btn');
-		btnCancel.classList.add('btn');
-		btnCancel.onclick = modalBoxCancelDefaultBehaviour;
-		buttonsSection.appendChild(btnCancel);
-
-		const btnConfirm = document.createElement('div');
-		btnConfirm.innerText = 'confirm';
-		btnConfirm.setAttribute('id', 'modal-box-confirm-btn');
-		btnConfirm.classList.add('btn');
-		btnConfirm.onclick = deleteNoteModalBoxConfirmation;
-		buttonsSection.appendChild(btnConfirm);
-
-		fadeInEffect(modalBox);
-		window.scrollTo(0, 0);
-		/*window.scrollTo({
-			top: document.body.clientHeight/2.3,
-			left: 0,
-			behavior: 'smooth',
-		});
-		*/
-		// document.body.style = 'overflow: hidden;';
-
-		
+		if(addThreeDots) {
+			newNotePreview.textContent = note.content.slice(0, endContentStrIndex) + '...';
+		} else {
+			newNotePreview.textContent = note.content.slice(0, endContentStrIndex);
+		}
 	}
-});
+	newNotePreview.classList.add('note-preview');
+	newNoteSection.appendChild(newNotePreview);
 
-function noteEditingCanceled() {
-	// console.log('editing canceled!');
+	const newNoteDate = document.createElement('div');
+	newNoteDate.textContent = 'Created: ' + note.createdDate;
+	newNoteDate.classList.add('note-date');
+	newNoteSection.appendChild(newNoteDate);
+
+	gMainContentContainer.prepend(newNoteSection);
+
+	renderFadeOutInEffect(document.getElementById('note-creation'), gNotesListContainer);
+	renderFadeInEffect(document.getElementById('btn-actions-container'));
+}
+
+function renderNoteView(note) {
+	const noteViewSection = document.createElement('section');
+	noteViewSection.setAttribute('id', 'note-view-section');
+	noteViewSection.dataset.id = note.id;
+	noteViewSection.classList.add('invisible');
+	gNoteViewContainer.appendChild(noteViewSection);
+
+	const noteViewTitleContainer = document.createElement('div');
+	noteViewTitleContainer.classList.add('note-view-title');
+	const noteViewTitle = document.createElement('h2');
+	noteViewTitle.innerText = note.title;
+	noteViewTitleContainer.appendChild(noteViewTitle);
+	noteViewSection.appendChild(noteViewTitleContainer);
+
+	const noteViewContent = document.createElement('div');
+	noteViewContent.innerHTML = note.content.replaceAll('\n', '<br>');
+	noteViewContent.classList.add('note-view-content');
+	noteViewSection.appendChild(noteViewContent);
+
+	const noteDate = document.createElement('div');
+	noteDate.innerText = 'Created: ' + note.createdDate;
+	noteDate.classList.add('note-date-created');
+	noteViewSection.appendChild(noteDate);
+}
+
+function renderEditNote(note) {
+	const noteTitle = document.querySelector('.note-view-title');
+	const noteTitleMaxLength = document.getElementById('note-creation-title-input').maxlength;
+	noteTitle.innerHTML = '';
+	const titleInput = document.createElement('input');
+	titleInput.id = 'note-edit-title-input';
+	titleInput.type = 'text';
+	titleInput.name = 'note-title';
+	titleInput.minlength = 3;
+	titleInput.maxlength = noteTitleMaxLength;
+	titleInput.value = note.title;
+	noteTitle.appendChild(titleInput);
+	
+	const noteContent = document.querySelector('.note-view-content');
+	noteContent.innerHTML = '';
+	const contentTextArea = document.createElement('textarea');
+	contentTextArea.id = 'note-edit-content-input';
+	contentTextArea.name = 'note-content';
+	contentTextArea.spellcheck = false;
+	contentTextArea.wrap = 'soft';
+	contentTextArea.textContent = note.content;
+	noteContent.appendChild(contentTextArea);
+
+	const buttonsContainer = document.createElement('div');
+	buttonsContainer.classList.add('note-editing-buttons-container');
+	noteContent.appendChild(buttonsContainer);
+
+	// Cancel note editing
+	const cancelBtn = document.createElement('button');
+	cancelBtn.id = 'cancel-note-editing-btn';
+	cancelBtn.classList.add('btn');
+	cancelBtn.onclick = renderEditNoteCancelAction;
+	cancelBtn.innerText = 'cancel';
+	buttonsContainer.appendChild(cancelBtn);
+
+	// Confirm note editing
+	const confirmBtn = document.createElement('button');
+	confirmBtn.id = 'confirm-note-editing-btn';
+	confirmBtn.classList.add('btn');
+	confirmBtn.onclick = renderEditNoteConfirmAction;
+	confirmBtn.innerText = 'confirm';
+	buttonsContainer.appendChild(confirmBtn);
+}
+
+function renderEditNoteCancelAction() {
 	const noteId = document.getElementById('note-view-section').dataset.id;
 	const note = noteGetById(noteId);
 
@@ -479,7 +386,7 @@ function noteEditingCanceled() {
 	noteViewContentContainer.innerHTML = note.content.replaceAll('\n', '<br>');
 }
 
-function noteEditingConfirmed() {
+function renderEditNoteConfirmAction() {
 	const noteId = document.getElementById('note-view-section').dataset.id;
 	const oldNote = noteGetById(noteId);
 
@@ -544,115 +451,52 @@ function noteEditingConfirmed() {
 		newNoteDate.classList.add('note-date');
 		noteSectionToChange.appendChild(newNoteDate);
 	}
+
+	console.debug('Click event -> Edit note confirmation | id: ' + noteId);
 }
 
-// NOTE: Click event -> add a new note
-function addNoteAction(event) {
-	document.getElementById('note-creation-title-input').value = '';
-	document.getElementById('note-creation-content-input').value = '';
-	noteCreationContainer = document.getElementById('note-creation');
-	
-	fadeOutInEffect(gNotesListContainer, noteCreationContainer);
-	fadeOutEffect(document.getElementById('btn-actions-container'));
-}
+function renderDeleteNote() {
+	const noteViewSectionToRemove = document.getElementById('note-view-section');
+	const noteIdToRemove = noteViewSectionToRemove.dataset.id;
+	noteRemove(noteIdToRemove);
 
-function clearAllNotesModalBoxConfirmation() {
-	notesClear();
-	fadeOutEffect(document.getElementById('modal-box-container'));
-	renderAllNotes();
-}
+	renderFadeOutInEffect(gNoteViewContainer, gNotesListContainer);
+	renderFadeInEffect(document.getElementById('btn-actions-container'));
 
-// NOTE: Click event -> clear all notes
-function clearAllNotesAction(event) {
-	// 'Are you sure?' confirmation modal box
-	const modalBox = document.getElementById('modal-box-container');
-	if(modalBox === null) {
-		return console.error(`Modal box doesn't exist, WTF?`);
-	}
-	// console.log(modalBox);
-	modalBox.innerHTML = '';
-	
-	const modalBoxSection = document.createElement('div');
-	modalBoxSection.classList.add('modal-box-section');
-	modalBox.appendChild(modalBoxSection);
 
-	const modalBoxTitleSection = document.createElement('div');
-	modalBoxTitleSection.innerText = 'Are you sure you want to erase all notes permanently?';
-	modalBoxTitleSection.classList.add('modal-box-title-section');
-	modalBoxSection.appendChild(modalBoxTitleSection);
-	
-	const buttonsSection = document.createElement('div');
-	buttonsSection.classList.add('modal-box-buttons-section');
-	modalBoxSection.appendChild(buttonsSection);
-
-	const btnCancel = document.createElement('div');
-	btnCancel.innerText = 'cancel';
-	btnCancel.setAttribute('id', 'modal-box-cancel-btn');
-	btnCancel.classList.add('btn');
-	btnCancel.onclick = modalBoxCancelDefaultBehaviour;
-	buttonsSection.appendChild(btnCancel);
-
-	const btnConfirm = document.createElement('div');
-	btnConfirm.innerText = 'confirm';
-	btnConfirm.setAttribute('id', 'modal-box-confirm-btn');
-	btnConfirm.classList.add('btn');
-	btnConfirm.onclick = clearAllNotesModalBoxConfirmation;
-	buttonsSection.appendChild(btnConfirm);
-
-	fadeInEffect(modalBox);
-	window.scrollTo(0, 0);
-	document.body.style = 'overflow: hidden;';
-}
-
-// @continue
-// NOTE: Click event -> import notes
-function modalBoxImportDataAction(event) {
-	const file = event.target.files[0];
-	const reader = new FileReader();
-
-	if(file !== null) {
-		reader.readAsText(file);
-	}
-
-	reader.addEventListener('load', function() {
-		if(reader.result) {
-			notesLoad(JSON.parse(reader.result));
-			renderAllNotes();
-			modalBoxCancelDefaultBehaviour(); // modal box fade-out effect
+	setTimeout(function() {
+		noteViewSectionToRemove.remove();
+		for(let i = 0; i < gMainContentContainer.childNodes.length; ++i) {
+			if(gMainContentContainer.childNodes[i].dataset.id === noteIdToRemove) {
+				gMainContentContainer.childNodes[i].remove();
+				break;
+			}
 		}
-	});
+	}, gTimeoutFadeEffectInMs*2);
+
+	renderFadeOutEffect(document.getElementById('modal-box-container'));
+	document.body.style = 'overflow: auto;';
+
+	console.debug('Click event -> Delete note confirmation | id: ' + noteIdToRemove);
 }
 
-// NOTE: Click event -> export notes
-function modalBoxExportDataAction(event) {
-	// console.log('export data here');
+function renderClearAllNotes() {
+	notesClear();
+	renderFadeOutEffect(document.getElementById('modal-box-container'));
+	renderAllNotes();
 
-	const dataAsFile = new Blob([JSON.stringify(gNotes)], {type: 'octet-stream'});
-	const hrefURL = URL.createObjectURL(dataAsFile);
-
-	const currentDate = new Date();
-	const link = document.createElement('a');
-	link.href = hrefURL;
-	link.style = 'display: none;';
-	link.download = 'notes_data_exported_' + currentDate.getDate() + '_' + (currentDate.getMonth()+1) + '_' + currentDate.getFullYear() + '.json';
-	document.body.appendChild(link);
-	link.click();
-
-	// TODO: Modal box auto msg (from top to screen center) saying that the data exported (downloaded)
-
-	URL.revokeObjectURL(hrefURL);
-	link.remove();
+	console.debug('Click event -> Delete all notes confirmation');
 }
 
-// NOTE: Click event -> backup notes 
-function backupNotes(event) {
-	// TODO: modal box (import data, export data, save to?[disk, drive, dropbox], close)
-
+//
+// NOTE: Click event -> backup notes
+//
+function renderBackupNotes(event) {
+	// Render a custom modal box with more than just cancel/confirm buttons
 	const modalBox = document.getElementById('modal-box-container');
 	if(modalBox === null) {
 		return console.error(`Modal box doesn't exist, WTF?`);
 	}
-	// console.log(modalBox);
 	modalBox.innerHTML = '';
 	
 	const modalBoxSection = document.createElement('div');
@@ -690,38 +534,71 @@ function backupNotes(event) {
 	const btnClose = document.createElement('div');
 	btnClose.id = 'modal-box-close-btn';
 	btnClose.classList.add('btn');
-	btnClose.onclick = modalBoxCancelDefaultBehaviour;
+	btnClose.onclick = renderModalBoxCancelAction;
 	buttonsSection.appendChild(btnClose);
 
-	// const importExportSection = document.createElement('div');
-
-	fadeInEffect(modalBox);
+	renderFadeInEffect(modalBox);
 	window.scrollTo(0, 0);
 	document.body.style = 'overflow: hidden;';
+
+	console.debug('Click event -> Backup notes');
 }
 
-// NOTE: Click event -> cancel new note creation
-let gBtnCancelNoteCreation = document.querySelector('.cancel-btn');
-gBtnCancelNoteCreation.addEventListener('click', function(event) {
-	fadeOutInEffect(document.getElementById('note-creation'), gNotesListContainer);
-	fadeInEffect(document.getElementById('btn-actions-container'));
+
+
+//
+// Controller
+//
+function preRenderSetup() {
+	// Checking if there's data to be loaded from local storage
+	{
+		const notesAppByDSLDataInLocalStorage = JSON.parse(localStorage.getItem(gRememorariAppNotesKey));
+		if(notesAppByDSLDataInLocalStorage !== null) {
+			gNotes = notesAppByDSLDataInLocalStorage;
+			console.debug('reMemorari App: notes, data key: ' + gRememorariAppNotesKey + '\nloaded: ' + gNotes.length + ' objects');
+		} else {
+			console.debug('reMemorari App: no local data stored (yet).');
+		}
+	}
+
+	let noteCreationTitleInput = document.getElementById('note-creation-title-input');
+
+	let userDeviceWidth = window.innerWidth;
+	if(userDeviceWidth >= 360 && userDeviceWidth < 400) {
+		noteCreationTitleInput.maxLength = 19;
+	} else if(userDeviceWidth >= 400 && userDeviceWidth < 430) {
+		noteCreationTitleInput.maxLength = 22;
+	} else if(userDeviceWidth >= 460 && userDeviceWidth < 500) {
+		noteCreationTitleInput.maxLength = 24;
+	} else if(userDeviceWidth >= 500) {
+		noteCreationTitleInput.maxLength = 26;
+	}
+}
+
+//
+// NOTE: Click event -> modal box (dark area / close action)
+//
+document.getElementById('modal-box-container').addEventListener('click', function(event) {
+	if(event.target.id === 'modal-box-container') {
+		renderModalBoxCancelAction();
+	}
 });
 
-// NOTE: Click event -> create note (button)
-let gBtnCreateNote = document.querySelector('.create-btn');
-gBtnCreateNote.addEventListener('click', function(event) {
+//
+// NOTE: Click event -> Create new note confirm action
+//
+document.querySelector('.create-btn').addEventListener('click', function(event) {
 	// Note title validation
 	const noteTitleInput = document.getElementById('note-creation-title-input');
 	{
-		if(noteTitleInput.value.length < 3) {
-			console.log('The note title must be greater than 3.');
-			// TODO: modal box
+		if(noteTitleInput.value.length < 2) {
+			// TODO: modal box auto-closing msg: 'The note title must be greater than 2.'
 			return;
 		}
 
 		for(let i = 0; i < gNotes.length; ++i) {
 			if(gNotes[i].title === noteTitleInput.value) {
-				console.log('Note title already exist.');
+				// TODO: modal box auto-closing msg: 'Note title already exist. Please, try again choosing another title.'
 				return;
 			}
 		}
@@ -729,13 +606,10 @@ gBtnCreateNote.addEventListener('click', function(event) {
 
 	const noteContentInput = document.getElementById('note-creation-content-input');
 	const notesContent = noteContentInput.value;
-	// const notesContent = noteContentInput.value.replaceAll('\n', '<br>');
-	// console.log(notesContent);
 
 	// Generating note date and ID info
 	let noteDate = new Date();
 	let noteId = '' + Date.parse(noteDate) + Math.floor(Math.random() * 100000);
-	// console.log(noteId);
 	let noteCreatedDateAsStr = '';
 	{
 		let noteDateDay = (noteDate.getDate() < 10) ? ('0' + (noteDate.getDate())) : noteDate.getDate();
@@ -744,51 +618,131 @@ gBtnCreateNote.addEventListener('click', function(event) {
 		let noteDateHour = (noteDate.getHours() < 10) ? ('0' + noteDate.getHours()) : noteDate.getHours();
 		let noteDateMinutes = (noteDate.getMinutes() < 10) ? ('0' + noteDate.getMinutes()) : noteDate.getMinutes();
 		noteCreatedDateAsStr = `${noteDateMonth}/${noteDateDay}/${noteDateYear} ${noteDateHour}:${noteDateMinutes}`;
-		// console.log(noteCreatedDateAsStr);
 	}
 	
 	noteCreate(noteId, noteTitleInput.value, notesContent, noteCreatedDateAsStr);
 
-	// TODO: move this to the view section
 	// render new added note to the notes list
-	{
-		const newNoteSection = document.createElement('section');
-		newNoteSection.dataset.id = noteId;
-		newNoteSection.classList.add('note');
+	const note = noteGetById(noteId);
+	renderNewNoteToNotesList(note);
 
-		const newNoteTitle = document.createElement('div');
-		newNoteTitle.textContent = noteTitleInput.value;
-		newNoteTitle.classList.add('note-title');
-		newNoteSection.appendChild(newNoteTitle);
-		
-		const newNotePreview = document.createElement('div');
+	console.debug('Click event -> Create new note confirmation | id: ' + note.id);
+});
 
-		{
-			let endContentStrIndex = 0;
-			let addThreeDots = false;
-			if(notesContent.length < 280) {
-				endContentStrIndex = notesContent.length;
-			} else {
-				endContentStrIndex = 280;
-				addThreeDots = true;
-			}
-			if(addThreeDots) {
-				newNotePreview.textContent = notesContent.slice(0, endContentStrIndex) + '...';
-			} else {
-				newNotePreview.textContent = notesContent.slice(0, endContentStrIndex);
+//
+// NOTE: Click event -> cancel new note cancel action
+//
+document.querySelector('.cancel-btn').addEventListener('click', function(event) {
+	renderFadeOutInEffect(document.getElementById('note-creation'), gNotesListContainer);
+	renderFadeInEffect(document.getElementById('btn-actions-container'));
+});
+
+//
+// NOTE: Click event -> view note
+//
+gMainContentContainer.addEventListener('click', function(event) {
+	if(event.target.classList.contains('note')) {
+		for(let i = 0; i < gNotes.length; ++i) {
+			if(event.target.dataset.id === gNotes[i].id) {
+				renderNoteView(gNotes[i]);
+				console.debug('Click event -> View note | id: ' + gNotes[i].id);
+				break;
 			}
 		}
-		newNotePreview.classList.add('note-preview');
-		newNoteSection.appendChild(newNotePreview);
 
-		const newNoteDate = document.createElement('div');
-		newNoteDate.textContent = 'Created: ' + noteCreatedDateAsStr;
-		newNoteDate.classList.add('note-date');
-		newNoteSection.appendChild(newNoteDate);
+		renderFadeOutInEffect(gNotesListContainer, gNoteViewContainer);
+		renderFadeInEffect(document.getElementById('note-view-section'));
+		renderFadeOutEffect(document.getElementById('btn-actions-container'));
+	}
+});
 
-		gMainContentContainer.prepend(newNoteSection);
+gNoteViewContainer.addEventListener('click', function(event) {
+	//
+	// NOTE: Click event -> go back (from note view to note list)
+	//
+	if(event.target.classList.contains('note-view-go-back-action')) {
+		const noteViewSectionToRemove = document.getElementById('note-view-section');
+		renderFadeOutInEffect(gNoteViewContainer, gNotesListContainer);
+		renderFadeInEffect(document.getElementById('btn-actions-container'));
+
+		setTimeout(function() {
+			noteViewSectionToRemove.remove();
+		}, gTimeoutFadeEffectInMs*3);
+
+		console.debug('Click event -> Go back to notes list');
 	}
 
-	fadeOutInEffect(document.getElementById('note-creation'), gNotesListContainer);
-	fadeInEffect(document.getElementById('btn-actions-container'));
+	//
+	// NOTE: Click event -> edit note
+	//
+	if(event.target.classList.contains('note-view-edit-action')) {
+		const noteId = document.getElementById('note-view-section').dataset.id;
+		let note = noteGetById(noteId);
+		renderEditNote(note);
+		console.debug('Click event -> Edit note | id: ' + noteId);
+	}
+
+	//
+	// NOTE: Click event -> delete note
+	//
+	if(event.target.classList.contains('note-view-delete-action')) {
+		const modalBoxTitle = 'Are you sure you want to permanently delete this note?';
+		const cancelActionText = 'cancel';
+		const confirmActionText = 'delete';
+		renderModalBox(modalBoxTitle, cancelActionText, confirmActionText, renderDeleteNote);
+		console.debug('Click event -> Delete note | id: ' + document.getElementById('note-view-section').dataset.id);
+	}
 });
+
+//
+// NOTE: Click event -> clear all notes
+//
+function clearAllNotes(event) {
+	const modalBoxTitle = 'Are you sure you want to delete all notes permanently?';
+	const cancelActionText = 'cancel';
+	const confirmActionText = 'delete all';
+	renderModalBox(modalBoxTitle, cancelActionText, confirmActionText, renderClearAllNotes);
+	console.debug('Click event -> Clear all notes');
+}
+
+// NOTE: Click event -> import notes
+function modalBoxImportDataAction(event) {
+	const file = event.target.files[0];
+	const reader = new FileReader();
+
+	if(file !== null) {
+		reader.readAsText(file);
+	}
+
+	reader.addEventListener('load', function() {
+		if(reader.result) {
+			notesLoad(JSON.parse(reader.result));
+			renderAllNotes();
+			renderModalBoxCancelAction(); // modal box fade-out effect
+			console.debug('Click event -> Import notes | File data has been read');
+		}
+	});
+}
+
+// NOTE: Click event -> export notes
+function modalBoxExportDataAction(event) {
+	const dataAsFile = new Blob([JSON.stringify(gNotes)], {type: 'octet-stream'});
+	const hrefURL = URL.createObjectURL(dataAsFile);
+
+	const currentDate = new Date();
+	const link = document.createElement('a');
+	link.href = hrefURL;
+	link.style = 'display: none;';
+	link.download = 'notes_data_exported_' + currentDate.getDate() + '_' + (currentDate.getMonth()+1) + '_' + currentDate.getFullYear() + '.json';
+	document.body.appendChild(link);
+	link.click();
+
+	// TODO: Modal box auto-closing msg (from top to screen center) saying that the data exported (downloaded)
+
+	URL.revokeObjectURL(hrefURL);
+	link.remove();
+
+	console.debug('Click event -> Export notes | Downloading note\'s data as a .json file');
+}
+
+
