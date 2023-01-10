@@ -194,19 +194,19 @@ div#app-main-container div#modal-box-container div.modal-box-buttons-section div
   opacity: 1;
 }
 div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-close-btn {
-  background: url("../_icons/icon_close.png") no-repeat center/50% rgba(26, 20, 23, 0.85);
+  background: url("../icons/icon_close.png") no-repeat center/50% rgba(26, 20, 23, 0.85);
 }
 div#app-main-container div#modal-box-container div.modal-box-buttons-section label#modal-box-import-data-btn {
   width: 2rem;
   height: 2rem;
-  background: url("../_icons/icon_import.png") no-repeat center/40% rgba(26, 20, 23, 0.85);
+  background: url("../icons/icon_import.png") no-repeat center/40% rgba(26, 20, 23, 0.85);
   margin-right: 2rem;
 }
 div#app-main-container div#modal-box-container div.modal-box-buttons-section label#modal-box-import-data-btn input#modal-box-import-data-input-btn {
   display: none;
 }
 div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-export-data-btn {
-  background: url("../_icons/icon_export.png") no-repeat center/40% rgba(26, 20, 23, 0.85);
+  background: url("../icons/icon_export.png") no-repeat center/40% rgba(26, 20, 23, 0.85);
   margin-right: 2rem;
 }
 div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-cancel-btn {
@@ -327,15 +327,15 @@ div#app-main-container div.author-label-container span span {
 }
 div#app-main-container div#create-action {
   bottom: 19.5rem;
-  background: url("../_icons/icon_plus.png") no-repeat center/50% rgba(26, 20, 23, 0.85);
+  background: url("../icons/icon_plus.png") no-repeat center/50% rgba(26, 20, 23, 0.85);
 }
 div#app-main-container div#clear-action {
   bottom: 11rem;
-  background: url("../_icons/icon_clear.png") no-repeat center/50% rgba(26, 20, 23, 0.85);
+  background: url("../icons/icon_clear.png") no-repeat center/50% rgba(26, 20, 23, 0.85);
 }
 div#app-main-container div#backup-action {
   bottom: 2.5rem;
-  background: url("../_icons/icon_cloud.png") no-repeat center/50% rgba(26, 20, 23, 0.85);
+  background: url("../icons/icon_cloud.png") no-repeat center/50% rgba(26, 20, 23, 0.85);
 }
 
 header#main-header {

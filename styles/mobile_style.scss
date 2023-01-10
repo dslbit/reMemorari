@@ -191,14 +191,14 @@ div#app-main-container {
 			}
 
 			div#modal-box-close-btn {
-				background: url('../_icons/icon_close.png') no-repeat center/50% rgba($color-black, 0.85);
+				background: url('../icons/icon_close.png') no-repeat center/50% rgba($color-black, 0.85);
 			}
 
 			// NOTE: An interesting way to style file input (wrap it with a label with a for param)
 			label#modal-box-import-data-btn {
 				width: 2rem;
 				height: 2rem;
-				background: url('../_icons/icon_import.png') no-repeat center/40% rgba($color-black, 0.85);
+				background: url('../icons/icon_import.png') no-repeat center/40% rgba($color-black, 0.85);
 				margin-right: 2rem;
 
 				input#modal-box-import-data-input-btn {
@@ -207,7 +207,7 @@ div#app-main-container {
 			}
 
 			div#modal-box-export-data-btn {
-				background: url('../_icons/icon_export.png') no-repeat center/40% rgba($color-black, 0.85);
+				background: url('../icons/icon_export.png') no-repeat center/40% rgba($color-black, 0.85);
 				margin-right: 2rem;
 			}
 
@@ -348,17 +348,17 @@ div#app-main-container {
 
 	div#create-action {
 		bottom: 19.5rem;
-		background: url('../_icons/icon_plus.png') no-repeat center/50% rgba($color-black, 0.85);
+		background: url('../icons/icon_plus.png') no-repeat center/50% rgba($color-black, 0.85);
 	}
 
 	div#clear-action {
 		bottom: 11.0rem;
-		background: url('../_icons/icon_clear.png') no-repeat center/50% rgba($color-black, 0.85);
+		background: url('../icons/icon_clear.png') no-repeat center/50% rgba($color-black, 0.85);
 	}
 
 	div#backup-action {
 		bottom: 2.5rem;
-		background: url('../_icons/icon_cloud.png') no-repeat center/50% rgba($color-black, 0.85);
+		background: url('../icons/icon_cloud.png') no-repeat center/50% rgba($color-black, 0.85);
 	}
 }
 
