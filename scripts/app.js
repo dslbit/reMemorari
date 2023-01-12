@@ -407,7 +407,18 @@ function renderNewNoteToNotesList(note) {
 	newNoteSection.classList.add('note');
 
 	const newNoteTitle = document.createElement('div');
-	newNoteTitle.textContent = note.title;
+	// newNoteTitle.textContent = note.title;
+	// copy the note title to the rendering, but if it's too large copy just a piece
+	{
+		let endTitleStrIndex;
+		if(note.title.length > 60) {
+			endTitleStrIndex = 60;
+			newNoteTitle.textContent = note.title.slice(0, endTitleStrIndex) + '...';
+		} else {
+			endTitleStrIndex = note.title.length;
+			newNoteTitle.textContent = note.title.slice(0, endTitleStrIndex);
+		}
+	}
 	newNoteTitle.classList.add('note-title');
 	newNoteSection.appendChild(newNoteTitle);
 	
@@ -566,7 +577,18 @@ function renderEditNoteConfirmAction() {
 		noteSectionToChange.innerHTML = '';
 
 		const newNoteTitle = document.createElement('div');
-		newNoteTitle.textContent = newNoteContent.title;
+		// newNoteTitle.textContent = newNoteContent.title;
+		// copy the note title to the rendering, but if it's too large copy just a piece
+		{
+			let endTitleStrIndex;
+			if(newNoteContent.title.length > 60) {
+				endTitleStrIndex = 60;
+				newNoteTitle.textContent = newNoteContent.title.slice(0, endTitleStrIndex) + '...';
+			} else {
+				endTitleStrIndex = newNoteContent.title.length;
+				newNoteTitle.textContent = newNoteContent.title.slice(0, endTitleStrIndex);
+			}
+		}
 		newNoteTitle.classList.add('note-title');
 		noteSectionToChange.appendChild(newNoteTitle);
 		
