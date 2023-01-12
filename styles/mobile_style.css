@@ -85,7 +85,9 @@ textarea:focus {
 }
 
 textarea {
-  min-height: 55vh;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  min-height: 45vh;
   resize: none;
 }
 
@@ -463,7 +465,7 @@ div#note-view header#note-view-header div img {
   pointer-events: none;
 }
 div#note-view section#note-view-section {
-  padding: 8.5rem 1rem 0rem;
+  padding: 9.5rem 1rem 0rem;
 }
 div#note-view section#note-view-section div.note-view-title {
   margin-bottom: 2rem;

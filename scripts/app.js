@@ -393,7 +393,11 @@ function renderModalBoxCancelAction() {
 
 function renderCreateNewNote(event) {
 	document.getElementById('note-creation-title-input').value = '';
-	document.getElementById('note-creation-content-input').value = '';
+
+	const textArea = document.getElementById('note-creation-content-input');
+	textArea.value = '';
+	textArea.oninput = renderNoteTextarea;
+	textArea.cols = 30;
 	const noteCreationContainer = document.getElementById('note-creation');
 	
 	renderFadeOutInEffect(gNotesListContainer, noteCreationContainer);
@@ -451,6 +455,13 @@ function renderNewNoteToNotesList(note) {
 
 	renderFadeOutInEffect(document.getElementById('note-creation'), gNotesListContainer);
 	renderFadeInEffect(document.getElementById('btn-actions-container'));
+	window.scrollTo(0, 0);
+}
+
+function renderNoteTextarea(event) {
+	// console.log(event);
+	event.target.style = 'height: ' + event.target.scrollHeight + 'px;';
+	// console.log();
 }
 
 function renderNoteView(note) {
@@ -502,8 +513,12 @@ function renderEditNote(note) {
 	contentTextArea.name = 'note-content';
 	contentTextArea.spellcheck = false;
 	contentTextArea.wrap = 'soft';
+	contentTextArea.cols = 30;
 	contentTextArea.textContent = note.content;
+	contentTextArea.oninput = renderNoteTextarea;
 	noteContent.appendChild(contentTextArea);
+	contentTextArea.style = 'height: ' + contentTextArea.scrollHeight + 'px;';
+	window.scrollTo(0, document.body.clientHeight);
 
 	const buttonsContainer = document.createElement('div');
 	buttonsContainer.classList.add('note-editing-buttons-container');
@@ -616,6 +631,7 @@ function renderEditNoteConfirmAction() {
 		newNoteDate.classList.add('note-date');
 		noteSectionToChange.appendChild(newNoteDate);
 	}
+	window.scrollTo(0, document.body.clientHeight);
 
 	// console.debug('Click event -> Edit note confirmation | id: ' + noteId);
 }
@@ -779,7 +795,7 @@ document.querySelector('.create-btn').addEventListener('click', function(event) 
 			// NOTE: Auto-closing msg
 			{
 				const msg = 'The note title must be at least 2 characters long.';
-				const timeOnScreenInMs = 2000;
+				const timeOnScreenInMs = 1500;
 				renderModalBoxMessage(msg, gModalBoxMessageTypes.msgFailure, timeOnScreenInMs);
 			}
 			return;
@@ -790,7 +806,7 @@ document.querySelector('.create-btn').addEventListener('click', function(event) 
 				// NOTE: Auto-closing msg
 				{
 					const msg = 'Note title already exist. Please, try again choosing another title.';
-					const timeOnScreenInMs = 2000;
+					const timeOnScreenInMs = 1500;
 					renderModalBoxMessage(msg, gModalBoxMessageTypes.msgFailure, timeOnScreenInMs);
 				}
 				return;
@@ -940,7 +956,7 @@ function modalBoxExportDataAction(event) {
 	// NOTE: Auto-closing msg
 	{
 		const msg = 'Your notes has been downloaded to your device!';
-		const timeOnScreenInMs = 5000;
+		const timeOnScreenInMs = 1500;
 		renderModalBoxMessage(msg, gModalBoxMessageTypes.msgSuccess, timeOnScreenInMs);
 	}
 
