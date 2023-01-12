@@ -10,12 +10,22 @@
   div#app-main-container div#create-action:hover div.btn-label,
   div#app-main-container div#clear-action:hover div.btn-label,
   div#app-main-container div#backup-action:hover div.btn-label {
+    border: 0.083333rem solid rgba(217, 203, 174, 0.5);
     text-decoration: none;
+  }
+  div#app-main-container div#modal-box-container div.modal-box-buttons-section label#modal-box-import-data-btn div.btn-label,
+  div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-export-data-btn div.btn-label,
+  div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-close-btn div.btn-label {
+    opacity: 0;
   }
   div#app-main-container div#modal-box-container div.modal-box-buttons-section label#modal-box-import-data-btn:hover div.btn-label,
   div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-export-data-btn:hover div.btn-label,
   div#app-main-container div#modal-box-container div.modal-box-buttons-section div#modal-box-close-btn:hover div.btn-label {
     opacity: 1;
+    border: 0.083333rem solid rgba(217, 203, 174, 0.5);
+  }
+  div#note-view header#note-view-header {
+    height: 5rem;
   }
   div#note-view header#note-view-header div.note-view-go-back-action div.btn-label,
   div#note-view header#note-view-header div.note-view-edit-action div.btn-label,
@@ -23,6 +33,7 @@
     opacity: 0;
     padding: 0.5rem 1rem;
     background-color: #1a1417;
+    border: 0.083333rem solid rgba(217, 203, 174, 0.5);
     text-decoration: underline;
   }
 }
@@ -42,7 +53,7 @@
     max-width: 1280px;
   }
   div#notes-list main#main-content {
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 33.33% 33.33% 33.33%;
   }
   div#note-view header#note-view-header {
     max-width: 1280px;
@@ -57,7 +68,7 @@
     max-width: 1920px;
   }
   div#notes-list main#main-content {
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 25% 25% 25% 25%;
   }
   div#note-view header#note-view-header {
     max-width: 1920px;

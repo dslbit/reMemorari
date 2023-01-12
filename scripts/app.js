@@ -1,3 +1,4 @@
+// TODO: do a better job in renderNoteView() when rendering the content. Use something better than just <br>
 // TODO: msg of the day: You haven't done a backup of your notes in a while. Do you want to backup your notes now?
 // TODO: note view info: #paragraphs, #lines, #characters, #avg-reading-time
 // TODO: save the current note the user is reading to load in a new session if needed
@@ -15,6 +16,21 @@ import {
 //
 // Model
 //
+
+const gMonths = [
+	'January',
+	'February',
+	'March',
+	'April',
+	'May',
+	'June',
+	'July',
+	'August',
+	'September',
+	'October',
+	'November',
+	'December'
+];
 
 let gMainContentContainer = document.getElementById('main-content');
 let gNoteViewContainer = document.getElementById('note-view');
@@ -212,7 +228,19 @@ function renderAllNotes() {
 		notesContainer.appendChild(noteSection);
 
 		const noteTitle = document.createElement('div');
-		noteTitle.textContent = note.title;
+
+		// copy the note title to the rendering, but if it's too large copy just a piece
+		{
+			let endTitleStrIndex;
+			if(note.title.length > 60) {
+				endTitleStrIndex = 60;
+				noteTitle.textContent = note.title.slice(0, endTitleStrIndex) + '...';
+			} else {
+				endTitleStrIndex = note.title.length;
+				noteTitle.textContent = note.title.slice(0, endTitleStrIndex);
+			}
+		}
+		// noteTitle.textContent = note.title;
 		noteTitle.classList.add('note-title');
 		noteSection.appendChild(noteTitle);
 
@@ -237,7 +265,12 @@ function renderAllNotes() {
 		noteSection.appendChild(noteContentPreview);
 
 		const noteDate = document.createElement('div');
-		noteDate.textContent = 'Created: ' + note.createdDate;
+
+		const dateSplit = note.createdDate.split('/');
+		if(dateSplit.length != 3) {
+			console.error('wtf? date format is incorrect!');
+		}
+		noteDate.textContent = 'Created: ' + gMonths[Number(dateSplit[0])-1] + ' ' + dateSplit[1] + ', ' + dateSplit[2];
 		noteDate.classList.add('note-date');
 		noteSection.appendChild(noteDate);
 
@@ -429,21 +462,25 @@ function renderNoteView(note) {
 	noteViewSection.appendChild(noteViewContent);
 
 	const noteDate = document.createElement('div');
-	noteDate.innerText = 'Created: ' + note.createdDate;
+	const dateSplit = note.createdDate.split('/');
+	if(dateSplit.length != 3) {
+		console.error('wtf? date format is incorrect!');
+	}
+	noteDate.textContent = 'Created: ' + gMonths[Number(dateSplit[0])-1] + ' ' + dateSplit[1] + ', ' + dateSplit[2];
 	noteDate.classList.add('note-date-created');
 	noteViewSection.appendChild(noteDate);
 }
 
 function renderEditNote(note) {
 	const noteTitle = document.querySelector('.note-view-title');
-	const noteTitleMaxLength = document.getElementById('note-creation-title-input').maxlength;
+	// const noteTitleMaxLength = document.getElementById('note-creation-title-input').maxlength;
 	noteTitle.innerHTML = '';
 	const titleInput = document.createElement('input');
 	titleInput.id = 'note-edit-title-input';
 	titleInput.type = 'text';
 	titleInput.name = 'note-title';
 	titleInput.minlength = 3;
-	titleInput.maxlength = noteTitleMaxLength;
+	// titleInput.maxlength = noteTitleMaxLength;
 	titleInput.value = note.title;
 	noteTitle.appendChild(titleInput);
 	
@@ -668,11 +705,10 @@ function renderBackupNotes(event) {
 	// console.debug('Click event -> Backup notes');
 }
 
-
-
 //
 // Controller
 //
+
 function preRenderSetup() {
 	// Checking if there's data to be loaded from local storage
 	{
@@ -685,6 +721,7 @@ function preRenderSetup() {
 		}
 	}
 
+	/*
 	let noteCreationTitleInput = document.getElementById('note-creation-title-input');
 
 	let userDeviceWidth = window.innerWidth;
@@ -697,6 +734,7 @@ function preRenderSetup() {
 	} else if(userDeviceWidth >= 500) {
 		noteCreationTitleInput.maxLength = 26;
 	}
+	*/
 }
 
 //
