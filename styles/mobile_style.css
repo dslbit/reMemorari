@@ -86,7 +86,6 @@ textarea:focus {
 
 textarea {
   overflow: hidden;
-  overflow-wrap: break-word;
   min-height: 45vh;
   resize: none;
 }
@@ -481,6 +480,7 @@ div#note-view section#note-view-section div.note-view-title h2 {
   overflow-wrap: break-word;
 }
 div#note-view section#note-view-section div.note-view-title input {
+  font-size: 1.3rem;
   margin-bottom: 0rem;
 }
 div#note-view section#note-view-section div.note-view-content {
@@ -490,6 +490,7 @@ div#note-view section#note-view-section div.note-view-content {
   text-align: center;
 }
 div#note-view section#note-view-section div.note-view-content textarea {
+  font-size: 1.15rem;
   margin-bottom: 2rem;
 }
 div#note-view section#note-view-section div.note-view-content div.note-editing-buttons-container {
