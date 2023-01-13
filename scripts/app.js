@@ -49,9 +49,8 @@ let gAppData = {
 };
 
 const gRememorariAppNotesKey = 'rememorariAppNotes'; // old key, remove it after some time
-// let gAppData.notes = []; // fed in preRenderSetup()
 /*
-let gAppData.notes = [
+let refNote = [
   {
   	id: 'id-01',
   	title: 'Lorem Ipsum 1',
@@ -798,7 +797,14 @@ function renderBackupNotes(event) {
 
 function preRenderSetup() {
 
-	//@continue
+	// Checking if there's data to be loaded from local storage
+	{
+		const notesAppDataInLocalStorage = JSON.parse(localStorage.getItem(gRememorariAppDataKey));
+		if(notesAppDataInLocalStorage !== null) {
+			gAppData = notesAppDataInLocalStorage;
+		}
+	}
+
 	// Checking for older app data versions updated, if not try to load newest app data results
 	{
 		const notesAppByDSLDataInLocalStorage = JSON.parse(localStorage.getItem(gRememorariAppNotesKey));
@@ -809,19 +815,11 @@ function preRenderSetup() {
 			}, 1000);
 			
 			// gAppData.notes = notesAppByDSLDataInLocalStorage;
-			gAppData.notes = notesAppByDSLDataInLocalStorage;
-			appDataSaveToLocalStorage();
+			notesLoad(notesAppByDSLDataInLocalStorage);
+			
 			localStorage.clear(gRememorariAppNotesKey); // clear old data key
 			// console.debug('reMemorari App: notes, data key: ' + gRememorariAppNotesKey + '\nloaded: ' + gAppData.notes.length + ' objects');
 		}	
-	}
-
-	// Checking if there's data to be loaded from local storage
-	{
-		const notesAppDataInLocalStorage = JSON.parse(localStorage.getItem(gRememorariAppDataKey));
-		if(notesAppDataInLocalStorage !== null) {
-			gAppData = notesAppDataInLocalStorage;
-		}
 	}
 
 	
@@ -992,6 +990,7 @@ function modalBoxImportDataAction(event) {
 	});
 }
 
+// TODO: change this, export also other kind of data
 // NOTE: Click event -> export notes
 function modalBoxExportDataAction(event) {
 	const dataAsFile = new Blob([JSON.stringify(gAppData.notes)], {type: 'octet-stream'});
