@@ -2,7 +2,7 @@
 // TODO: msg of the day: You haven't done a backup of your notes in a while. Do you want to backup your notes now?
 // TODO: note view info: #paragraphs, #lines, #characters, #avg-reading-time
 // TODO: save the current note the user is reading to load in a new session if needed
-// TODO: save note creation state in case of user closing the app before confirmation
+// TODO: save note creation state in case of user closing the app before confirmation?
 // TODO: split content into paragraphs (using the newline separator or something like that)
 // TODO: more backup options (Google Drive/Dropbox/...)
 
@@ -42,10 +42,16 @@ const gModalBoxMessageTypes = {
 	msgFailure: 2
 };
 
-const gRememorariAppNotesKey = 'rememorariAppNotes';
-let gNotes = []; // fed in preRenderSetup()
+const gRememorariAppDataKey = 'rememorariAppData';
+let gAppData = {
+	// isUserFirstTimeUsingTheApp = true,
+	notes: []
+};
+
+const gRememorariAppNotesKey = 'rememorariAppNotes'; // old key, remove it after some time
+// let gAppData.notes = []; // fed in preRenderSetup()
 /*
-let gNotes = [
+let gAppData.notes = [
   {
   	id: 'id-01',
   	title: 'Lorem Ipsum 1',
@@ -56,57 +62,87 @@ let gNotes = [
 ];
 */
 
+// TODO: check out notes functions after update
 function noteCreate(noteId, noteTitle, noteContent, noteCreatedDate) {
-	gNotes.unshift({
+	gAppData.notes.unshift({
 		id: noteId,
 		title: noteTitle,
 		content: noteContent,
 		createdDate: noteCreatedDate
 	});
-	notesSaveToLocalStorage();
+	appDataSaveToLocalStorage();
 }
 
 function noteRemove(noteId) {
-	gNotes = gNotes.filter(function(note) {
+	gAppData.notes = gAppData.notes.filter(function(note) {
 		if(noteId == note.id) {
 			return false;
 		} else {
 			return true;
 		}
 	});
-	notesSaveToLocalStorage();
+	appDataSaveToLocalStorage();
 }
 
-function notesSaveToLocalStorage() {
-	localStorage.setItem(gRememorariAppNotesKey, JSON.stringify(gNotes));
+function appDataSaveToLocalStorage() {
+	localStorage.setItem(gRememorariAppDataKey, JSON.stringify(gAppData));
 }
 
 function notesLoad(importedNotes) {
-	if(importedNotes) {
-		gNotes = importedNotes;
+	if(importedNotes !== null) {
+		let result;
+		for(let i = 0; i < importedNotes.length; ++i) {
+
+			let j;
+			for(j = 0; j < gAppData.notes.length; ++j) {
+				result = gAppData.notes[j].id === importedNotes[i].id;
+				if(result === true) {
+					break;
+				}
+			}
+
+			if(result === true) { // it means the note already exist, so just update the necessary data
+				gAppData.notes[j].title = importedNotes[i].title;
+				gAppData.notes[j].content = importedNotes[i].content;
+				gAppData.notes[j].createdDate = importedNotes[i].createdDate;
+			} else { // it means the imported note is a new note that has been uploaded
+				gAppData.notes.unshift({
+					id: importedNotes[i].id,
+					title: importedNotes[i].title,
+					content: importedNotes[i].content,
+					createdDate: importedNotes[i].createdDate
+				});
+			}
+		}
+
+		// sort notes by created date (oldest to newer)
+		gAppData.notes.sort(function(a, b) {
+			return new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime();
+		});
+		gAppData.notes.reverse(); // reverse (newer -> oldest)
+		appDataSaveToLocalStorage();
 	}
-	notesSaveToLocalStorage();
 }
 
 function notesClear() {
-	gNotes = [];
-	localStorage.clear(gRememorariAppNotesKey);
+	gAppData.notes = [];
+	appDataSaveToLocalStorage();
 }
 
 function noteEdit(noteId, newNoteData) {
-	for(let i = 0; i < gNotes.length; ++i) {
-		if(gNotes[i].id === noteId) {
-			gNotes[i] = newNoteData;
-			notesSaveToLocalStorage();
+	for(let i = 0; i < gAppData.notes.length; ++i) {
+		if(gAppData.notes[i].id === noteId) {
+			gAppData.notes[i] = newNoteData;
+			appDataSaveToLocalStorage();
 			break;
 		}
 	}
 }
 
 function noteGetById(noteId) {
-	for(let i = 0; i < gNotes.length; ++i) {
-		if(gNotes[i].id === noteId) {
-			return gNotes[i];
+	for(let i = 0; i < gAppData.notes.length; ++i) {
+		if(gAppData.notes[i].id === noteId) {
+			return gAppData.notes[i];
 			break;
 		}
 	}
@@ -118,7 +154,7 @@ function noteGetById(noteId) {
 // First Run
 //
 preRenderSetup();
-renderAllNotes(gNotes);
+renderAllNotes(gAppData.notes);
 
 
 
@@ -147,6 +183,13 @@ function renderAllNotes() {
 		modalBoxMsgContainer.appendChild(document.createElement('div'));
 		appMainContainer.appendChild(modalBoxMsgContainer);
 	}
+
+	// Click event for the modal box auto-closing message (if the user don't want to wait for the modal box slide animation)
+	document.getElementById('modal-box-msg-container').addEventListener('click', function(event) {
+		if(event.target.id === 'modal-box-msg-container') {
+			renderModalBoxMsgCloseAction();
+		}
+	});
 
 	// If static html for the buttons action (add, clear-all-notes, backup-notes) doesn't exist
 	if(document.getElementById('btn-actions-container') === null) {
@@ -221,7 +264,7 @@ function renderAllNotes() {
 		}, gTimeoutFadeEffectInMs*2);
 	}
 	
-	gNotes.forEach(function(note) {
+	gAppData.notes.forEach(function(note) {
 		const noteSection = document.createElement('section');
 		noteSection.classList.add('note');
 		noteSection.dataset.id = note.id;
@@ -388,6 +431,12 @@ function renderModalBox(title, cancelText, confirmText, funcClickConfirmationAct
 // NOTE: Click event -> modal box (GENERAL CANCEL or CLOSE action)
 function renderModalBoxCancelAction() {
 	renderFadeOutEffect(document.getElementById('modal-box-container'));
+	document.body.style = 'overflow: auto;';
+}
+
+// NOTE: Click event -> modal box msg (FORCE CLOSE)
+function renderModalBoxMsgCloseAction() {
+	renderFadeOutEffect(document.getElementById('modal-box-msg-container'));
 	document.body.style = 'overflow: auto;';
 }
 
@@ -748,31 +797,34 @@ function renderBackupNotes(event) {
 //
 
 function preRenderSetup() {
-	// Checking if there's data to be loaded from local storage
+
+	//@continue
+	// Checking for older app data versions updated, if not try to load newest app data results
 	{
 		const notesAppByDSLDataInLocalStorage = JSON.parse(localStorage.getItem(gRememorariAppNotesKey));
 		if(notesAppByDSLDataInLocalStorage !== null) {
-			gNotes = notesAppByDSLDataInLocalStorage;
-			// console.debug('reMemorari App: notes, data key: ' + gRememorariAppNotesKey + '\nloaded: ' + gNotes.length + ' objects');
-		} else {
-			// console.debug('reMemorari App: no local data stored (yet).');
+			// this should be set as an async timeOut func because at this point in time the content wasn't rendered yet, so we give it some time for it to render, this is not ideal but...
+			setTimeout(function() {
+				renderModalBoxMessage("Your notes data has been found as an older version of this app in your browser's local storage and automatically was updated to the newest version of the app", gModalBoxMessageTypes.msgInfo, 8000);
+			}, 1000);
+			
+			// gAppData.notes = notesAppByDSLDataInLocalStorage;
+			gAppData.notes = notesAppByDSLDataInLocalStorage;
+			appDataSaveToLocalStorage();
+			localStorage.clear(gRememorariAppNotesKey); // clear old data key
+			// console.debug('reMemorari App: notes, data key: ' + gRememorariAppNotesKey + '\nloaded: ' + gAppData.notes.length + ' objects');
+		}	
+	}
+
+	// Checking if there's data to be loaded from local storage
+	{
+		const notesAppDataInLocalStorage = JSON.parse(localStorage.getItem(gRememorariAppDataKey));
+		if(notesAppDataInLocalStorage !== null) {
+			gAppData = notesAppDataInLocalStorage;
 		}
 	}
 
-	/*
-	let noteCreationTitleInput = document.getElementById('note-creation-title-input');
-
-	let userDeviceWidth = window.innerWidth;
-	if(userDeviceWidth >= 360 && userDeviceWidth < 400) {
-		noteCreationTitleInput.maxLength = 19;
-	} else if(userDeviceWidth >= 400 && userDeviceWidth < 430) {
-		noteCreationTitleInput.maxLength = 22;
-	} else if(userDeviceWidth >= 460 && userDeviceWidth < 500) {
-		noteCreationTitleInput.maxLength = 24;
-	} else if(userDeviceWidth >= 500) {
-		noteCreationTitleInput.maxLength = 26;
-	}
-	*/
+	
 }
 
 //
@@ -801,8 +853,8 @@ document.querySelector('.create-btn').addEventListener('click', function(event) 
 			return;
 		}
 
-		for(let i = 0; i < gNotes.length; ++i) {
-			if(gNotes[i].title === noteTitleInput.value) {
+		for(let i = 0; i < gAppData.notes.length; ++i) {
+			if(gAppData.notes[i].title === noteTitleInput.value) {
 				// NOTE: Auto-closing msg
 				{
 					const msg = 'Note title already exist. Please, try again choosing another title.';
@@ -852,10 +904,10 @@ document.querySelector('.cancel-btn').addEventListener('click', function(event) 
 //
 gMainContentContainer.addEventListener('click', function(event) {
 	if(event.target.classList.contains('note')) {
-		for(let i = 0; i < gNotes.length; ++i) {
-			if(event.target.dataset.id === gNotes[i].id) {
-				renderNoteView(gNotes[i]);
-				// console.debug('Click event -> View note | id: ' + gNotes[i].id);
+		for(let i = 0; i < gAppData.notes.length; ++i) {
+			if(event.target.dataset.id === gAppData.notes[i].id) {
+				renderNoteView(gAppData.notes[i]);
+				// console.debug('Click event -> View note | id: ' + gAppData.notes[i].id);
 				break;
 			}
 		}
@@ -942,7 +994,7 @@ function modalBoxImportDataAction(event) {
 
 // NOTE: Click event -> export notes
 function modalBoxExportDataAction(event) {
-	const dataAsFile = new Blob([JSON.stringify(gNotes)], {type: 'octet-stream'});
+	const dataAsFile = new Blob([JSON.stringify(gAppData.notes)], {type: 'octet-stream'});
 	const hrefURL = URL.createObjectURL(dataAsFile);
 
 	const currentDate = new Date();

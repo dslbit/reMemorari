@@ -422,7 +422,7 @@ div#note-view header#note-view-header div.note-view-delete-action {
   padding: 0.65rem;
   display: flex;
   justify-content: center;
-  align-items: start;
+  align-items: center;
   cursor: pointer;
   z-index: 10;
   border-radius: 50%;
