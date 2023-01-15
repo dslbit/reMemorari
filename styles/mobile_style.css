@@ -487,7 +487,7 @@ div#note-view section#note-view-section div.note-view-content {
   margin-bottom: 2rem;
   font-size: 1.25rem;
   overflow-wrap: break-word;
-  text-align: center;
+  text-align: left;
 }
 div#note-view section#note-view-section div.note-view-content textarea {
   font-size: 1.15rem;
@@ -524,8 +524,25 @@ div#note-view section#note-view-section div.note-view-content div.note-editing-b
 div#note-view section#note-view-section div.note-view-content div.note-editing-buttons-container button#confirm-note-editing-btn:active {
   box-shadow: inset 0rem 0rem 0.8333rem #8db35e;
 }
-div#note-view section#note-view-section div.note-date-created {
+div#note-view section#note-view-section div.note-view-content-info {
+  width: 100%;
+  padding-top: 3rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 1.5rem;
+  column-gap: 0.35rem;
+  place-items: start center;
+  align-content: center;
+  border-top: 0.083333rem solid rgba(217, 203, 174, 0.25);
+}
+div#note-view section#note-view-section div.note-date-created,
+div#note-view section#note-view-section div.note-last-edit-date,
+div#note-view section#note-view-section div.note-total-words,
+div#note-view section#note-view-section div.note-avg-reading-time,
+div#note-view section#note-view-section div.note-total-lines,
+div#note-view section#note-view-section div.note-total-chars {
   font-size: 0.85rem;
+  border-bottom: 0.083333rem solid rgba(217, 203, 174, 0.25);
 }
 
 div#note-creation {

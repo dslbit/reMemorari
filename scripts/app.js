@@ -1,9 +1,9 @@
 // TODO: do a better job in renderNoteView() when rendering the content. Use something better than just <br>
+// TODO: split content into paragraphs (using the newline separator or something like that)
 // TODO: msg of the day: You haven't done a backup of your notes in a while. Do you want to backup your notes now?
 // TODO: note view info: #paragraphs, #lines, #characters, #avg-reading-time
 // TODO: save the current note the user is reading to load in a new session if needed
 // TODO: save note creation state in case of user closing the app before confirmation?
-// TODO: split content into paragraphs (using the newline separator or something like that)
 // TODO: more backup options (Google Drive/Dropbox/...)
 
 import {
@@ -61,14 +61,68 @@ let refNote = [
 ];
 */
 
-// TODO: check out notes functions after update
+// calc avg. reading time, words, etc.
+function noteCalcInfo(content) {
+	let contentTotalWords = 0, contentTotalChars = 0, contentTotalLines = 0;
+	let contentAvgReadingTime = 0.0;
+	let current, insideWord;
+
+	insideWord = false;
+	if(content.length > 0) {
+		contentTotalLines = 1;
+	}
+	for(let i = 0; i < content.length; ++i) {
+		current = content[i];
+		
+		if(i+1 >= content.length) {
+			if(insideWord) {
+				++contentTotalWords;
+			}
+		}
+
+		if(current !== ' ' && current !== '\t' && current !== '\n') {
+			insideWord = true;
+			++contentTotalChars;
+			continue;
+		} else {
+			if(insideWord) {
+				insideWord = false;
+				++contentTotalWords;
+			}
+
+			if(current === '\n') {
+				++contentTotalLines;
+			}
+		}
+	}
+
+	contentAvgReadingTime = contentTotalWords / 238.0; // in minutes | if < 0, print "less than 1 minute" | if > 1 round up
+
+	let result = {
+		totalWords: contentTotalWords,
+		avgReadingTime: contentAvgReadingTime,
+		totalLines: contentTotalLines,
+		totalChars: contentTotalChars
+	};
+
+	return result;
+}
+
 function noteCreate(noteId, noteTitle, noteContent, noteCreatedDate) {
+	let noteInfo = noteCalcInfo(noteContent);
+
 	gAppData.notes.unshift({
 		id: noteId,
 		title: noteTitle,
 		content: noteContent,
-		createdDate: noteCreatedDate
+		words: noteInfo.totalWords,
+		lines: noteInfo.totalLines,
+		characters: noteInfo.totalChars,
+		avgReadingTime: noteInfo.avgReadingTime,
+		createdDate: noteCreatedDate,
+		lastEditDate: noteCreatedDate
 	});
+	// console.debug(gAppData.notes[0]);
 	appDataSaveToLocalStorage();
 }
 
@@ -131,7 +185,26 @@ function notesClear() {
 function noteEdit(noteId, newNoteData) {
 	for(let i = 0; i < gAppData.notes.length; ++i) {
 		if(gAppData.notes[i].id === noteId) {
+			let noteInfo = noteCalcInfo(newNoteData.content);
+			newNoteData.words = noteInfo.totalWords
+			newNoteData.lines = noteInfo.totalLines;
+			newNoteData.characters = noteInfo.totalChars;
+			newNoteData.avgReadingTime = noteInfo.avgReadingTime;
+
+			// Generating note date and ID info
+			let noteLastEditDateAsStr = '';
+			{
+				let noteDate = new Date();
+				let noteDateDay = (noteDate.getDate() < 10) ? ('0' + (noteDate.getDate())) : noteDate.getDate();
+				let noteDateMonth = (noteDate.getMonth() + 1 < 10) ? ('0' + (noteDate.getMonth() + 1)) : noteDate.getMonth() + 1;
+				const noteDateYear = noteDate.getFullYear();
+				let noteDateHour = (noteDate.getHours() < 10) ? ('0' + noteDate.getHours()) : noteDate.getHours();
+				let noteDateMinutes = (noteDate.getMinutes() < 10) ? ('0' + noteDate.getMinutes()) : noteDate.getMinutes();
+				noteLastEditDateAsStr = `${noteDateMonth}/${noteDateDay}/${noteDateYear} ${noteDateHour}:${noteDateMinutes}`;
+			}
+			newNoteData.lastEditDate = noteLastEditDateAsStr;
 			gAppData.notes[i] = newNoteData;
+			// console.debug(gAppData.notes[0]);
 			appDataSaveToLocalStorage();
 			break;
 		}
@@ -507,9 +580,14 @@ function renderNewNoteToNotesList(note) {
 }
 
 function renderNoteTextarea(event) {
-	// console.log(event);
+	// console.debug(event);
+
+	// if user erase any content, reset textarea height
+	if(event.inputType === 'deleteContentBackward') {
+		event.target.style = 'height: 0px;';
+	}
+
 	event.target.style = 'height: ' + event.target.scrollHeight + 'px;';
-	// console.log();
 }
 
 function renderNoteView(note) {
@@ -519,6 +597,7 @@ function renderNoteView(note) {
 	noteViewSection.classList.add('invisible');
 	gNoteViewContainer.appendChild(noteViewSection);
 
+	// note's title
 	const noteViewTitleContainer = document.createElement('div');
 	noteViewTitleContainer.classList.add('note-view-title');
 	const noteViewTitle = document.createElement('h2');
@@ -526,19 +605,65 @@ function renderNoteView(note) {
 	noteViewTitleContainer.appendChild(noteViewTitle);
 	noteViewSection.appendChild(noteViewTitleContainer);
 
+	// note's content
 	const noteViewContent = document.createElement('div');
 	noteViewContent.innerHTML = note.content.replaceAll('\n', '<br>');
 	noteViewContent.classList.add('note-view-content');
 	noteViewSection.appendChild(noteViewContent);
 
-	const noteDate = document.createElement('div');
-	const dateSplit = note.createdDate.split('/');
-	if(dateSplit.length != 3) {
+	// note's info container
+	const noteViewContentInfo = document.createElement('div');
+	noteViewContentInfo.classList.add('note-view-content-info');
+
+	// note's created date
+	const noteCreatedDate = document.createElement('div');
+	noteCreatedDate.classList.add('note-date-created');
+	const createdDateSplit = note.createdDate.split('/');
+	if(createdDateSplit.length != 3) {
 		console.error('wtf? date format is incorrect!');
 	}
-	noteDate.textContent = 'Created: ' + gMonths[Number(dateSplit[0])-1] + ' ' + dateSplit[1] + ', ' + dateSplit[2];
-	noteDate.classList.add('note-date-created');
-	noteViewSection.appendChild(noteDate);
+	noteCreatedDate.textContent = 'Created: ' + gMonths[Number(createdDateSplit[0])-1] + ' ' + createdDateSplit[1] + ', ' + createdDateSplit[2];
+	noteViewContentInfo.appendChild(noteCreatedDate);
+
+	// last note's edit date
+	const lastEditDate = document.createElement('div');
+	lastEditDate.classList.add('note-last-edit-date');
+	const lastEditDateSplit = note.lastEditDate.split('/');
+	if(lastEditDateSplit.length != 3) {
+		console.error('wtf? date format is incorrect!');
+	}
+	lastEditDate.textContent = 'Last Edit: ' + gMonths[Number(lastEditDateSplit[0])-1] + ' ' + lastEditDateSplit[1] + ', ' + lastEditDateSplit[2];;
+	noteViewContentInfo.appendChild(lastEditDate);
+
+	// note's total words
+	const noteWords = document.createElement('div');
+	noteWords.classList.add('note-total-words');
+	noteWords.textContent = 'Words: ' + note.words;
+	noteViewContentInfo.appendChild(noteWords);
+	
+	const avgReadingTime = document.createElement('div');
+	avgReadingTime.classList.add('note-avg-reading-time');
+	let noteReadingTimeTxt = '';
+	if(note.avgReadingTime < 1) {
+		noteReadingTimeTxt = '< 1 min';
+	} else {
+		noteReadingTimeTxt = '±' + Math.ceil(note.avgReadingTime) + ' min';
+	}
+	avgReadingTime.textContent = 'AVG. Reading Time: ' + noteReadingTimeTxt;
+	noteViewContentInfo.appendChild(avgReadingTime);
+
+	const noteLines = document.createElement('div');
+	noteLines.classList.add('note-total-lines');
+	noteLines.textContent = 'Lines: ' + note.lines;
+	noteViewContentInfo.appendChild(noteLines);
+
+	const noteCharacters = document.createElement('div');
+	noteCharacters.classList.add('note-total-chars');
+	noteCharacters.textContent = 'Characters: ' + note.characters;
+	noteViewContentInfo.appendChild(noteCharacters);
+
+	// TODO: add more info
+	noteViewSection.appendChild(noteViewContentInfo);
 }
 
 function renderEditNote(note) {
@@ -615,7 +740,8 @@ function renderEditNoteConfirmAction() {
 
 	const noteViewContentContainer = document.querySelector('.note-view-content');
 	const noteContentInput = document.getElementById('note-edit-content-input');
-	noteViewContentContainer.innerHTML = noteContentInput.value.replaceAll('\n', '<br>');;
+	noteContentInput.oninput = renderNoteTextarea;
+	noteViewContentContainer.innerHTML = noteContentInput.value.replaceAll('\n', '<br>');
 	// noteViewContentContainer.textContent = noteContentInput.value;
 
 	const newNoteContent = {
@@ -625,6 +751,37 @@ function renderEditNoteConfirmAction() {
 		createdDate: oldNote.createdDate
 	}
 	noteEdit(noteId, newNoteContent);
+
+	// update note-info
+	{
+		const note = noteGetById(noteId);
+		
+		// @continue
+		const noteLastEditDate = document.querySelector('.note-last-edit-date');
+		const lastEditDateSplit = note.lastEditDate.split('/');
+		if(lastEditDateSplit.length != 3) {
+			console.error('wtf? date format is incorrect!');
+		}
+		noteLastEditDate.textContent = 'Last Edit: ' + gMonths[Number(lastEditDateSplit[0])-1] + ' ' + lastEditDateSplit[1] + ', ' + lastEditDateSplit[2];
+
+		const noteWords = document.querySelector('.note-total-words');
+		noteWords.textContent = 'Words: ' + note.words;
+		
+		const avgReadingTime = document.querySelector('.note-avg-reading-time');
+		let noteReadingTimeTxt = '';
+		if(note.avgReadingTime < 1) {
+			noteReadingTimeTxt = '< 1 min';
+		} else {
+			noteReadingTimeTxt = '±' + Math.ceil(note.avgReadingTime) + ' min';
+		}
+		avgReadingTime.textContent = 'AVG. Reading Time: ' + noteReadingTimeTxt;
+
+		const noteLines = document.querySelector('.note-total-lines');
+		noteLines.textContent = 'Lines: ' + note.lines;
+
+		const noteCharacters = document.querySelector('.note-total-chars');
+		noteCharacters.textContent = 'Characters: ' + note.characters;
+	}
 
 	// update note preview in note-list section
 	{
@@ -822,7 +979,29 @@ function preRenderSetup() {
 		}	
 	}
 
-	
+	// Update old note's info
+	{
+		for(let i = 0; i < gAppData.notes.length; ++i) {
+			if(gAppData.notes[i].lastEditDate === '' || gAppData.notes[i].lastEditDate === undefined) {
+				let noteInfo = noteCalcInfo(gAppData.notes[i].content);
+
+				const newNoteObjectModel = {
+					id: gAppData.notes[i].id,
+					title: gAppData.notes[i].title,
+					content: gAppData.notes[i].content,
+					words: noteInfo.totalWords,
+					lines: noteInfo.totalLines,
+					characters: noteInfo.totalChars,
+					avgReadingTime: noteInfo.avgReadingTime,
+					createdDate: gAppData.notes[i].createdDate,
+					lastEditDate: gAppData.notes[i].createdDate
+				};
+				Object.assign(gAppData.notes[i], newNoteObjectModel);
+				console.debug(gAppData.notes[i]);
+				appDataSaveToLocalStorage();
+			}
+		}
+	}
 }
 
 //
@@ -840,6 +1019,7 @@ document.getElementById('modal-box-container').addEventListener('click', functio
 document.querySelector('.create-btn').addEventListener('click', function(event) {
 	// Note title validation
 	const noteTitleInput = document.getElementById('note-creation-title-input');
+	/*
 	{
 		if(noteTitleInput.value.length < 2) {
 			// NOTE: Auto-closing msg
@@ -863,9 +1043,12 @@ document.querySelector('.create-btn').addEventListener('click', function(event) 
 			}
 		}
 	}
+	*/
 
 	const noteContentInput = document.getElementById('note-creation-content-input');
 	const notesContent = noteContentInput.value;
+
+	
 
 	// Generating note date and ID info
 	let noteDate = new Date();
