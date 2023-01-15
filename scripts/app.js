@@ -635,7 +635,6 @@ function renderNoteTextarea(event) {
 	}
 
 	event.target.style = 'height: ' + event.target.scrollHeight + 'px;';
-	window.scrollTo(0, document.body.clientHeight);
 }
 
 function renderNoteView(note) {
