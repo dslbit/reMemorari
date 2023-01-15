@@ -382,9 +382,8 @@ div#notes-list main#main-content section.note div.note-title {
 div#notes-list main#main-content section.note div.note-preview {
   width: 100%;
   align-self: center;
-  text-align: center;
+  text-align: left;
   font-size: 0.9rem;
-  text-indent: 1rem;
   margin-bottom: 0.5rem;
   overflow-wrap: break-word;
 }

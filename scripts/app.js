@@ -122,13 +122,15 @@ function noteCreate(noteId, noteTitle, noteContent, noteCreatedDate) {
 		createdDate: noteCreatedDate,
 		lastEditDate: noteCreatedDate
 	});
-	// console.debug(gAppData.notes[0]);
-	appDataSaveToLocalStorage();
+	// console.debug('File size: ' + Number.parseFloat(JSON.stringify(gAppData.notes[0]).length / 1024.0 / 1024.0).toFixed(2) + 'MB');
+	// console.debug('Total Local Storage Size: ' + Number.parseFloat(JSON.stringify(gAppData).length / 1024.0 / 1024.0).toFixed(2) + 'MB');
+	let validSave = appDataSaveToLocalStorage();
+	return validSave;
 }
 
 function noteRemove(noteId) {
 	gAppData.notes = gAppData.notes.filter(function(note) {
-		if(noteId == note.id) {
+		if(noteId === note.id) {
 			return false;
 		} else {
 			return true;
@@ -137,8 +139,31 @@ function noteRemove(noteId) {
 	appDataSaveToLocalStorage();
 }
 
+// @continue | DEBUG!
 function appDataSaveToLocalStorage() {
-	localStorage.setItem(gRememorariAppDataKey, JSON.stringify(gAppData));
+	let validSave = false;
+
+	const oldData = JSON.parse(localStorage.getItem(gRememorariAppDataKey));
+	const newData = JSON.stringify(gAppData);
+	if((newData.length / 1024.0 / 1024.0) > 4.5) { // if greater than 4.5mb, don't try to save more data (safe margin to be able to load again)
+		gAppData = oldData;
+		renderModalBoxMessage('Maximum storage capabilities exceeded! Changes will not be saved.', gModalBoxMessageTypes.msgFailure, 5000);
+	} else {
+		localStorage.clear(gRememorariAppDataKey);
+		try {
+			localStorage.setItem(gRememorariAppDataKey, newData);
+			validSave = true;
+		} catch(err) {
+			// console.debug(err);
+			modalBoxExportDataAction(); // download old data
+			gAppData = oldData;
+			localStorage.setItem(gRememorariAppDataKey, JSON.stringify(oldData));
+			alert('There was an error when trying to save your notes.\nDownloading notes for caution.');
+			location.reload();
+		}
+	}
+
+	return validSave;
 }
 
 function notesLoad(importedNotes) {
@@ -173,7 +198,8 @@ function notesLoad(importedNotes) {
 			return new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime();
 		});
 		gAppData.notes.reverse(); // reverse (newer -> oldest)
-		appDataSaveToLocalStorage();
+		let validSave = appDataSaveToLocalStorage();
+		return validSave;
 	}
 }
 
@@ -205,6 +231,8 @@ function noteEdit(noteId, newNoteData) {
 			newNoteData.lastEditDate = noteLastEditDateAsStr;
 			gAppData.notes[i] = newNoteData;
 			// console.debug(gAppData.notes[0]);
+			// console.debug('File size: ' + Number.parseFloat(JSON.stringify(gAppData.notes[i]).length / 1024.0 / 1024.0).toFixed(2) + 'MB');
+			// console.debug('Total Local Storage Size: ' + Number.parseFloat(JSON.stringify(gAppData).length / 1024.0 / 1024.0).toFixed(2) + 'MB');
 			appDataSaveToLocalStorage();
 			break;
 		}
@@ -370,12 +398,19 @@ function renderAllNotes() {
 				endContentStrIndex = 280;
 				addThreeDots = true;
 			}
+
+			let noteContentAsHTML;
 			if(addThreeDots) {
-				noteContentPreview.textContent = note.content.slice(0, endContentStrIndex) + '...';
+				noteContentAsHTML = note.content.slice(0, endContentStrIndex) + '...';
+
 			} else {
-				noteContentPreview.textContent = note.content.slice(0, endContentStrIndex)
+				noteContentAsHTML = note.content.slice(0, endContentStrIndex);
 			}
+			noteContentAsHTML = noteContentAsHTML.replaceAll('\n', '<br/>');
+			noteContentAsHTML = noteContentAsHTML.replaceAll(' ', '&nbsp;');
+			noteContentPreview.innerHTML = noteContentAsHTML;
 		}
+
 		noteContentPreview.classList.add('note-preview');
 		noteSection.appendChild(noteContentPreview);
 
@@ -450,8 +485,13 @@ function renderModalBoxMessage(msg, msgType, timeOnScreenInMs) {
 
 	setTimeout(function() {
 		modalBoxMsg.classList.remove('visible');
-		document.body.style = 'overflow: auto;';
+		if(!document.getElementById('modal-box-container').classList.contains('visible')) { // if there's no other modal box behind, 'show' scroll bar
+			document.body.style = 'overflow: auto;';
+		}
 		modalBoxMsg.classList.add('hidden-container');
+		if(document.getElementById('note-creation').classList.contains('visible')) { // generally in case of a maximum storage size being full msg
+			window.scrollTo(0, document.body.clientHeight);
+		}
 	}, timeOnScreenInMs + 1500);
 }
 
@@ -518,6 +558,7 @@ function renderCreateNewNote(event) {
 	const textArea = document.getElementById('note-creation-content-input');
 	textArea.value = '';
 	textArea.oninput = renderNoteTextarea;
+	textArea.style = 'height: ' + event.target.scrollHeight + 'px;';
 	textArea.cols = 30;
 	const noteCreationContainer = document.getElementById('note-creation');
 	
@@ -558,11 +599,17 @@ function renderNewNoteToNotesList(note) {
 			endContentStrIndex = 280;
 			addThreeDots = true;
 		}
+
+		let noteContentAsHTML;
 		if(addThreeDots) {
-			newNotePreview.textContent = note.content.slice(0, endContentStrIndex) + '...';
+			noteContentAsHTML = note.content.slice(0, endContentStrIndex) + '...';
+
 		} else {
-			newNotePreview.textContent = note.content.slice(0, endContentStrIndex);
+			noteContentAsHTML = note.content.slice(0, endContentStrIndex);
 		}
+		noteContentAsHTML = noteContentAsHTML.replaceAll('\n', '<br/>');
+		noteContentAsHTML = noteContentAsHTML.replaceAll(' ', '&nbsp;');
+		newNotePreview.innerHTML = noteContentAsHTML;
 	}
 	newNotePreview.classList.add('note-preview');
 	newNoteSection.appendChild(newNotePreview);
@@ -583,11 +630,12 @@ function renderNoteTextarea(event) {
 	// console.debug(event);
 
 	// if user erase any content, reset textarea height
-	if(event.inputType === 'deleteContentBackward') {
+	if(event.inputType === 'deleteContentBackward' || event.inputType === 'insertFromPaste') {
 		event.target.style = 'height: 0px;';
 	}
 
 	event.target.style = 'height: ' + event.target.scrollHeight + 'px;';
+	window.scrollTo(0, document.body.clientHeight);
 }
 
 function renderNoteView(note) {
@@ -607,7 +655,11 @@ function renderNoteView(note) {
 
 	// note's content
 	const noteViewContent = document.createElement('div');
-	noteViewContent.innerHTML = note.content.replaceAll('\n', '<br>');
+	{
+		let noteContentToHTML = note.content.replaceAll('\n', '<br>');
+		noteContentToHTML = noteContentToHTML.replaceAll(' ', '&nbsp;');
+		noteViewContent.innerHTML = noteContentToHTML;
+	}
 	noteViewContent.classList.add('note-view-content');
 	noteViewSection.appendChild(noteViewContent);
 
@@ -725,7 +777,11 @@ function renderEditNoteCancelAction() {
 	noteViewTitleContainer.appendChild(noteTitle);
 
 	const noteViewContentContainer = document.querySelector('.note-view-content');
-	noteViewContentContainer.innerHTML = note.content.replaceAll('\n', '<br>');
+	{
+		let noteContentToHTML = note.content.replaceAll('\n', '<br>');
+		noteContentToHTML = noteContentToHTML.replaceAll(' ', '&nbsp;');
+		noteViewContentContainer.innerHTML = noteContentToHTML;
+	}
 }
 
 function renderEditNoteConfirmAction() {
@@ -741,7 +797,11 @@ function renderEditNoteConfirmAction() {
 	const noteViewContentContainer = document.querySelector('.note-view-content');
 	const noteContentInput = document.getElementById('note-edit-content-input');
 	noteContentInput.oninput = renderNoteTextarea;
-	noteViewContentContainer.innerHTML = noteContentInput.value.replaceAll('\n', '<br>');
+	{
+		let noteContentToHTML = noteContentInput.value.replaceAll('\n', '<br>');
+		noteContentToHTML = noteContentToHTML.replaceAll(' ', '&nbsp;');
+		noteViewContentContainer.innerHTML = noteContentToHTML;
+	}
 	// noteViewContentContainer.textContent = noteContentInput.value;
 
 	const newNoteContent = {
@@ -756,7 +816,6 @@ function renderEditNoteConfirmAction() {
 	{
 		const note = noteGetById(noteId);
 		
-		// @continue
 		const noteLastEditDate = document.querySelector('.note-last-edit-date');
 		const lastEditDateSplit = note.lastEditDate.split('/');
 		if(lastEditDateSplit.length != 3) {
@@ -822,11 +881,17 @@ function renderEditNoteConfirmAction() {
 				endContentStrIndex = 280;
 				addThreeDots = true;
 			}
+
+			let noteContentAsHTML;
 			if(addThreeDots) {
-				newNotePreview.textContent = newNoteContent.content.slice(0, endContentStrIndex) + '...';
+				noteContentAsHTML = newNoteContent.content.slice(0, endContentStrIndex) + '...';
+
 			} else {
-				newNotePreview.textContent = newNoteContent.content.slice(0, endContentStrIndex)
+				noteContentAsHTML = newNoteContent.content.slice(0, endContentStrIndex);
 			}
+			noteContentAsHTML = noteContentAsHTML.replaceAll('\n', '<br/>');
+			noteContentAsHTML = noteContentAsHTML.replaceAll(' ', '&nbsp;');
+			newNotePreview.innerHTML = noteContentAsHTML;
 		}
 		newNotePreview.classList.add('note-preview');
 		noteSectionToChange.appendChild(newNotePreview);
@@ -1063,11 +1128,14 @@ document.querySelector('.create-btn').addEventListener('click', function(event) 
 		noteCreatedDateAsStr = `${noteDateMonth}/${noteDateDay}/${noteDateYear} ${noteDateHour}:${noteDateMinutes}`;
 	}
 	
-	noteCreate(noteId, noteTitleInput.value, notesContent, noteCreatedDateAsStr);
-
-	// render new added note to the notes list
-	const note = noteGetById(noteId);
-	renderNewNoteToNotesList(note);
+	let isCreateResultValid = noteCreate(noteId, noteTitleInput.value, notesContent, noteCreatedDateAsStr);
+	if(isCreateResultValid === true) {
+		// render new added note to the notes list
+		const note = noteGetById(noteId);
+		renderNewNoteToNotesList(note);
+	} else {
+		// document.body.scrollTo(0, document.body.clientHeight);
+	}
 
 	// console.debug('Click event -> Create new note confirmation | id: ' + note.id);
 });
@@ -1159,16 +1227,17 @@ function modalBoxImportDataAction(event) {
 
 	reader.addEventListener('load', function() {
 		if(reader.result) {
-			notesLoad(JSON.parse(reader.result));
-			renderAllNotes();
-			renderModalBoxCancelAction(); // modal box fade-out effect
-			// NOTE: Auto-closing msg
-			{
-				const msg = 'Your notes has been uploaded and updated!';
-				const timeOnScreenInMs = 1500;
-				renderModalBoxMessage(msg, gModalBoxMessageTypes.msgSuccess, timeOnScreenInMs);
+			if(notesLoad(JSON.parse(reader.result)) === true) {
+				renderAllNotes();
+				renderModalBoxCancelAction(); // modal box fade-out effect
+				// NOTE: Auto-closing msg
+				{
+					const msg = 'Your notes has been uploaded and updated!';
+					const timeOnScreenInMs = 1500;
+					renderModalBoxMessage(msg, gModalBoxMessageTypes.msgSuccess, timeOnScreenInMs);
+				}
+				// console.debug('Click event -> Import notes | File data has been read');
 			}
-			// console.debug('Click event -> Import notes | File data has been read');
 		}
 	});
 }
