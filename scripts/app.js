@@ -997,7 +997,7 @@ function preRenderSetup() {
 					lastEditDate: gAppData.notes[i].createdDate
 				};
 				Object.assign(gAppData.notes[i], newNoteObjectModel);
-				console.debug(gAppData.notes[i]);
+				// console.debug(gAppData.notes[i]);
 				appDataSaveToLocalStorage();
 			}
 		}
