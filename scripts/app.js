@@ -1,7 +1,6 @@
-// TODO: do a better job in renderNoteView() when rendering the content. Use something better than just <br>
-// TODO: split content into paragraphs (using the newline separator or something like that)
+// TODO: add note title btn instead of a blank input
+// TODO: italic, bold, underline, code section, custom tags?
 // TODO: msg of the day: You haven't done a backup of your notes in a while. Do you want to backup your notes now?
-// TODO: note view info: #paragraphs, #lines, #characters, #avg-reading-time
 // TODO: save the current note the user is reading to load in a new session if needed
 // TODO: save note creation state in case of user closing the app before confirmation?
 // TODO: more backup options (Google Drive/Dropbox/...)
@@ -139,7 +138,6 @@ function noteRemove(noteId) {
 	appDataSaveToLocalStorage();
 }
 
-// @continue | DEBUG!
 function appDataSaveToLocalStorage() {
 	let validSave = false;
 
@@ -182,13 +180,23 @@ function notesLoad(importedNotes) {
 			if(result === true) { // it means the note already exist, so just update the necessary data
 				gAppData.notes[j].title = importedNotes[i].title;
 				gAppData.notes[j].content = importedNotes[i].content;
+				gAppData.notes[j].words = importedNotes[i].words;
+				gAppData.notes[j].lines = importedNotes[i].lines;
+				gAppData.notes[j].characters = importedNotes[i].characters;
+				gAppData.notes[j].avgReadingTime = importedNotes[i].avgReadingTime,
 				gAppData.notes[j].createdDate = importedNotes[i].createdDate;
+				gAppData.notes[j].lastEditDate = importedNotes[i].lastEditDate;
 			} else { // it means the imported note is a new note that has been uploaded
 				gAppData.notes.unshift({
 					id: importedNotes[i].id,
 					title: importedNotes[i].title,
 					content: importedNotes[i].content,
-					createdDate: importedNotes[i].createdDate
+					words: importedNotes[i].words,
+					lines: importedNotes[i].lines,
+					characters: importedNotes[i].characters,
+					avgReadingTime: importedNotes[i].avgReadingTime,
+					createdDate: importedNotes[i].createdDate,
+					lastEditDate: importedNotes[i].lastEditDate
 				});
 			}
 		}
