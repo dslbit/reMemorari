@@ -486,7 +486,9 @@ div#note-view section#note-view-section div.note-view-content {
   margin-bottom: 2rem;
   font-size: 1.25rem;
   overflow-wrap: break-word;
-  text-align: left;
+  white-space: break-spaces;
+  text-align: justify;
+  hyphens: auto;
 }
 div#note-view section#note-view-section div.note-view-content textarea {
   font-size: 1.15rem;

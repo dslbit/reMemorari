@@ -663,9 +663,7 @@ function renderNoteView(note) {
 	// note's content
 	const noteViewContent = document.createElement('div');
 	{
-		let noteContentToHTML = note.content.replaceAll('\n', '<br>');
-		noteContentToHTML = noteContentToHTML.replaceAll(' ', '&nbsp;');
-		noteViewContent.innerHTML = noteContentToHTML;
+		noteViewContent.textContent = note.content;
 	}
 	noteViewContent.classList.add('note-view-content');
 	noteViewSection.appendChild(noteViewContent);
@@ -785,9 +783,8 @@ function renderEditNoteCancelAction() {
 
 	const noteViewContentContainer = document.querySelector('.note-view-content');
 	{
-		let noteContentToHTML = note.content.replaceAll('\n', '<br>');
-		noteContentToHTML = noteContentToHTML.replaceAll(' ', '&nbsp;');
-		noteViewContentContainer.innerHTML = noteContentToHTML;
+		noteViewContentContainer.innerHTML = '';
+		noteViewContentContainer.textContent = note.content;
 	}
 }
 
@@ -805,11 +802,9 @@ function renderEditNoteConfirmAction() {
 	const noteContentInput = document.getElementById('note-edit-content-input');
 	noteContentInput.oninput = renderNoteTextarea;
 	{
-		let noteContentToHTML = noteContentInput.value.replaceAll('\n', '<br>');
-		noteContentToHTML = noteContentToHTML.replaceAll(' ', '&nbsp;');
-		noteViewContentContainer.innerHTML = noteContentToHTML;
+		noteViewContentContainer.innerHTML = '';
+		noteViewContentContainer.textContent = noteContentInput.value;
 	}
-	// noteViewContentContainer.textContent = noteContentInput.value;
 
 	const newNoteContent = {
 		id: noteId,
