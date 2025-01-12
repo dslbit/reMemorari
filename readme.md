@@ -1,4 +1,4 @@
-[CLICK HERE TO TEST](https://rememorari.com/)
+[CLICK HERE TO TEST]([https://rememorari.com/](https://dslbit.github.io/reMemorari/))
 
 # A way to manage your personal notes.
 
